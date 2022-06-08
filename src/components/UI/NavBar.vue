@@ -102,6 +102,9 @@ li a {
 .nav-wrap {
   display: flex;
 }
+.nav-wrap button {
+  font-size: 15px;
+}
 @media (max-width: 992px) {
   .navbar-toggler {
     display: flex;

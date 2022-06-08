@@ -129,7 +129,7 @@ export default {
 .custom-select .selected:after {
   position: absolute;
   content: "";
-  transition: all 0.4s ease;
+  transition: all 0.3s ease;
   top: 18px;
   right: 1em;
   width: 0;
