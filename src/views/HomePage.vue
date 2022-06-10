@@ -127,7 +127,7 @@
               <p>FAQ</p>
             </div>
           </div>
-          <div class="col-md-2 text-end">
+          <div class="col-md-2 text-end play-market">
             <div class="third-col float-end">
               <img src="../assets/app-store.svg" alt="" />
             </div>
@@ -212,8 +212,10 @@ export default {
   color: #016bd4;
   outline: none;
   border: none;
-  box-shadow: 0px 0px 35px rgba(1, 107, 212, 0.35);
   padding: 10px 20px;
+}
+.map-wrap button:hover {
+  box-shadow: 0px 0px 25px rgba(96, 167, 238, 0.7);
 }
 .yandex-map-wrap div {
   width: 85%;
@@ -263,6 +265,10 @@ export default {
   border: none;
   background: #016bd4;
   color: #fff;
+  transition: all 0.3s ease;
+}
+.price-row button:hover {
+  box-shadow: 0px 0px 25px rgba(96, 167, 238, 0.7);
 }
 #footer {
   background: #1b1b1d;
@@ -288,7 +294,7 @@ export default {
   font-size: 14px;
   margin-top: 10px;
   background: linear-gradient(180deg, #0189e1 0%, #016bd4 100%);
-  border-radius: 10px;
+  border-radius: 6px;
 }
 .form-wrap button:hover {
   box-shadow: 0px 0px 15px rgba(1, 107, 212, 0.35);
@@ -304,6 +310,12 @@ input::placeholder {
   font-size: 17px;
   color: #fff;
 }
+.play-market div,
+.play-market img,
+.last-footer .col-3 img {
+  cursor: pointer;
+}
+
 .third-col {
   width: 150px;
   height: 50px;
@@ -326,6 +338,11 @@ input::placeholder {
   }
   #map .first-row {
     background-position-y: 15rem;
+  }
+}
+@media screen and (min-width: 1700px) {
+  #map .first-row {
+    background-position-y: 23rem;
   }
 }
 @media screen and (max-width: 995px) {

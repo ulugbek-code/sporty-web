@@ -36,7 +36,7 @@
               default="Ваш город"
             ></base-dropdown>
           </div>
-          <div class="d-flex">
+          <!-- <div class="d-flex">
             <button
               class="btn btn-light text-primary mx-lg-4 px-4"
               type="button"
@@ -46,7 +46,7 @@
             <button class="btn btn-primary px-4" type="button">
               Регистрация
             </button>
-          </div>
+          </div> -->
         </div>
       </div>
     </div>

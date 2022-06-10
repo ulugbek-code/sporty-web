@@ -64,7 +64,7 @@ export default {};
   border-radius: 50%;
   animation-name: animate;
   animation-timing-function: cubic-bezier(0.26, 0.53, 0.74, 1.48);
-  animation-duration: 2s;
+  animation-duration: 2.2s;
   animation-iteration-count: infinite;
 }
 .scroll-down img {
