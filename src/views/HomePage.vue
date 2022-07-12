@@ -1,4 +1,38 @@
 <template>
+  <base-dialog :show="isSubmitted">
+    <template #default>
+      <div class="form-task text-center">
+        <img src="../assets/correct.png" alt="" />
+        <h4 style="color: #222">Спасибо за ваш вклад!</h4>
+        <p>Вам остается только ждать, все остальное сделаем сами</p>
+      </div>
+      <div class="d-grid text-center mt-5">
+        <button
+          @click="isSubmitted = false"
+          class="w-100 btn btn-primary py-2 px-5"
+        >
+          Готово
+        </button>
+      </div>
+    </template>
+  </base-dialog>
+  <base-dialog :show="isCanceled">
+    <template #default>
+      <div class="form-task text-center">
+        <img src="../assets/remove.png" alt="" />
+        <h2 class="mt-2">Не отправлено</h2>
+      </div>
+      <div class="d-grid text-center mt-5">
+        <button
+          @click="isCanceled = false"
+          class="w-100 btn btn-primary py-2 px-5"
+        >
+          Заново
+        </button>
+      </div>
+    </template>
+  </base-dialog>
+  <!--  -->
   <section id="showcase">
     <show-case></show-case>
   </section>
@@ -7,89 +41,80 @@
       <div class="row first-row">
         <div class="col-md-6">
           <div class="map-wrap">
-            <h3>Популярные залы</h3>
-            <p>Залы, завоевавшие доверие пользователей</p>
+            <h3>Популярные заведения</h3>
+            <p>Заведения, завоевавшие доверие пользователей</p>
             <div>
-              <button>Посмотреть все залы</button>
+              <button>Посмотреть все заведения</button>
             </div>
           </div>
         </div>
         <div class="col-md-6 text-end">
           <div class="map-wrap">
-            <h3>Новые залы</h3>
-            <p>Недавно открывшиеся и самые новые добавленные залы</p>
+            <h3>Новые заведения</h3>
+            <p>Недавно открывшиеся и самые новые добавленные заведения</p>
             <div>
-              <button>Посмотреть все залы</button>
+              <button>Посмотреть все заведения</button>
             </div>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-12">
-          <div class="yandex-map-wrap text-center mt-3">
-            <h2 class="fw-bold">Залы возле дома, работы и учебы</h2>
-            <p>
-              Залы возле дома, работы и учебы Занимайся когда угодно, где угодно
-              и сколько угодно
-            </p>
-            <div>
-              <img src="../assets/yandex-map.png" alt="" />
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="row price-row">
-        <div class="col-12 text-center mb-4">
-          <h2 class="fw-bold">Почему абонемент Sporty?</h2>
-          <p>Потому что у нас самые выгодные абонементы</p>
+      <div class="row mb-5" id="places">
+        <div class="yandex-map-wrap text-center mt-3">
+          <h2 class="fw-bold">Заведения возле дома, учебы и работы</h2>
+          <p>
+            Найдите учебные заведения неподалеку от вашего дома, учебы и работы
+          </p>
         </div>
         <div class="col-12">
-          <div class="prices d-flex justify-content-center">
-            <div class="price text-center">
-              <h5>Абонемент Sporty</h5>
-              <h3 class="fw-bold">1 200 000 сум / год</h3>
-              <p class="mt-4">100+ заведений</p>
-              <p>Рассрочка на 3 месяца</p>
-              <p>Безлимит</p>
+          <div class="row">
+            <div class="col-md-3 p-0 mb-4 mb-md-0">
+              <all-classes
+                :all="classesShort"
+                :eachPlace="foundClass"
+                @sendEach="getEach"
+              ></all-classes>
             </div>
-            <div class="or"><h2 class="fw-bold">Или</h2></div>
-            <div class="price text-center">
-              <h5>Обычный абонемент</h5>
-              <h3 class="fw-bold">2 000 000 сум / год</h3>
-              <p class="mt-4">1 заведение</p>
-              <p>Единоразовая плата</p>
-              <p>12 занятий в месяц</p>
+            <div class="col-md-9 map-wrap p-0">
+              <map-component
+                :allClasses="classesShort"
+                :zoomN="zNumber"
+                :nCoords="newCoords"
+                @sendCoords="getCoords"
+              ></map-component>
             </div>
-          </div>
-          <div class="price-check text-center">
-            <button class="px-5 py-2">Узнать цены</button>
           </div>
         </div>
       </div>
+      <price-section></price-section>
     </div>
     <div id="footer">
       <div class="container">
         <div class="row">
           <div class="col-10 form-wrap m-auto">
             <form @submit.prevent="">
-              <h3 class="fw-bold">
-                Получите рекомендации по тренировкам от экспертов
-              </h3>
-              <p>
-                Мы с радостью поможем вам подобрать наиболее подходящий для вас
-                абонемент
-              </p>
+              <h3 class="fw-bold">Получите рекомендации по партнерству</h3>
+              <p>Мы с радостью поможем вам стать нашим партнером</p>
               <input
+                v-model.trim="firstName"
                 type="text"
-                class="form-control w-75 mb-3"
+                class="form-control w-75 mb-3 border"
+                :class="isEmpty && !firstName ? 'border-danger' : ''"
                 placeholder="Ваше имя"
+                tabindex="0"
+                @blur="isEmpty = false"
               />
               <input
-                type="text"
-                class="form-control w-75 mb-3"
+                v-model.trim="phoneNumber"
+                type="tel"
+                class="form-control w-75 mb-3 border"
+                :class="isEmpty && !phoneNumber ? 'border-danger' : ''"
                 placeholder="Ваш номер телефона"
+                tabindex="0"
+                @blur="isEmpty = false"
               />
-              <button class="btn btn-primary">Получить рекомендации</button>
+              <button @click="createRec" class="btn btn-primary">
+                Получить рекомендации
+              </button>
             </form>
           </div>
         </div>
@@ -97,7 +122,11 @@
           <div class="col-md-3">
             <div class="first-col">
               <img class="mb-2" src="../assets/light-logo.svg" alt="" />
-              <h5 class="fw-bold text-light">+998 (99) 544 5394</h5>
+              <h5>
+                <a href="tel:+998995445394" class="fw-bold text-light">
+                  +998 (99) 544 5394
+                </a>
+              </h5>
               <p>Узбекистан Г. Ташкент.</p>
               <p>Юнусабадский район</p>
               <p>БОГИШАМОЛ 21Б</p>
@@ -105,9 +134,9 @@
           </div>
           <div class="col-md-2">
             <div class="second-col">
-              <h6 class="mb-2">Компания “Sporty”</h6>
+              <h6 class="mb-2">Компания “E-Hub”</h6>
               <p>О нас</p>
-              <p>Залы и студии</p>
+              <p>Учебные заведения</p>
               <p>Контакты</p>
             </div>
           </div>
@@ -137,7 +166,7 @@
         <hr class="custom-hr my-4" />
         <div class="row last-footer">
           <div class="col-9">
-            <h6>© {{ year }} ЧП “Sporty” | info@sporty.uz</h6>
+            <h6>© {{ year }} ЧП “E-Hub” | info@ehub.uz</h6>
             <p>Все работы защищены авторскими правами.</p>
             <p>Копирование и использование материалов</p>
             <p>только с разрешения компании</p>
@@ -154,23 +183,89 @@
 </template>
 
 <script>
+import customAxios from "../api";
+import { defineAsyncComponent } from "vue";
+const PriceSection = defineAsyncComponent(() =>
+  import("../components/HomePage/PriceSection.vue")
+);
+const BaseDialog = defineAsyncComponent(() =>
+  import("../components/UI/BaseDialog.vue")
+);
+const AllClasses = defineAsyncComponent(() =>
+  import("../components/HomePage/AllClasses.vue")
+);
+const MapComponent = defineAsyncComponent(() =>
+  import("../components/UI/MapComponent.vue")
+);
 import ShowCase from "../components/HomePage/ShowCase.vue";
 export default {
   components: {
+    PriceSection,
     ShowCase,
+    MapComponent,
+    AllClasses,
+    BaseDialog,
   },
   data() {
     return {
+      zNumber: 13,
+      newCoords: [41.31481558486347, 69.24903592258136],
+      isEmpty: false,
+      isSubmitted: false,
+      isCanceled: false,
+      firstName: "",
+      phoneNumber: "",
       year: "",
+      foundClass: null,
     };
   },
+  computed: {
+    classesShort() {
+      return this.$store.getters.moduleShort;
+    },
+  },
   methods: {
+    getEach(val) {
+      if (val) {
+        this.newCoords = val.location;
+        setTimeout(() => (this.zNumber = 18), 1000);
+      } else {
+        this.newCoords = [41.31481558486347, 69.24903592258136];
+        this.zNumber = 13;
+      }
+    },
     getYear() {
       this.year = new Date().getFullYear();
     },
+    getCoords(id) {
+      this.foundClass = this.classesShort.find((short) => short.id == id);
+    },
+    reset() {
+      this.firstName = "";
+      this.phoneNumber = "";
+    },
+    async createRec() {
+      if (!this.firstName || !this.phoneNumber) {
+        this.isEmpty = true;
+        return;
+      }
+      try {
+        await customAxios.post("/api/v1/recommendation/", {
+          name: this.firstName,
+          phone_number: this.phoneNumber,
+        });
+        this.isSubmitted = true;
+        this.reset();
+      } catch (e) {
+        this.isCanceled = true;
+        console.log(e);
+      }
+    },
   },
-  created() {
+  async created() {
     this.getYear();
+    await this.$store.dispatch("getModuleShort");
+    await this.$store.dispatch("getQuestions");
   },
 };
 </script>
@@ -184,7 +279,6 @@ export default {
   height: 90vh;
   overflow: hidden;
 }
-
 #map {
   width: 100%;
   height: 100vh;
@@ -213,6 +307,7 @@ export default {
   outline: none;
   border: none;
   padding: 10px 20px;
+  transition: all 0.3s ease;
 }
 .map-wrap button:hover {
   box-shadow: 0px 0px 25px rgba(96, 167, 238, 0.7);
@@ -221,54 +316,11 @@ export default {
   width: 85%;
   margin: 0 auto;
 }
-.yandex-map-wrap p,
-.price-row p {
+.yandex-map-wrap p {
   color: #016bd4;
 }
 .yandex-map-wrap div img {
   width: 100%;
-}
-.price {
-  padding: 4rem 2rem;
-  border-radius: 10px;
-}
-.price p {
-  margin-bottom: 4px;
-}
-.prices .price:first-child {
-  color: #fff;
-  background: linear-gradient(180deg, #016bd4 0%, #003cbf 100%);
-}
-.prices .price:first-child p {
-  color: #fff;
-}
-.prices .price:last-child {
-  border: 1px solid rgba(1, 107, 212, 0.3);
-}
-.prices .price:last-child p {
-  color: #212529;
-}
-.or {
-  display: flex;
-  align-items: center;
-  margin: 0 2rem;
-}
-.price-check {
-  padding-top: 4rem;
-  height: 200px;
-  background: url("../assets/v-sign.svg") center;
-  background-size: 200px;
-  background-repeat: no-repeat;
-}
-.price-row button {
-  outline: none;
-  border: none;
-  background: #016bd4;
-  color: #fff;
-  transition: all 0.3s ease;
-}
-.price-row button:hover {
-  box-shadow: 0px 0px 25px rgba(96, 167, 238, 0.7);
 }
 #footer {
   background: #1b1b1d;
@@ -315,7 +367,9 @@ input::placeholder {
 .last-footer .col-3 img {
   cursor: pointer;
 }
-
+h5 a {
+  text-decoration: none;
+}
 .third-col {
   width: 150px;
   height: 50px;
@@ -325,6 +379,20 @@ input::placeholder {
   align-items: center;
   border-radius: 10px;
   margin-bottom: 8px;
+}
+input.border-danger::placeholder {
+  color: #dc3545;
+}
+.form-task img {
+  min-width: 150px;
+  margin: 2rem 0;
+}
+.form-task span img {
+  width: 24px;
+  padding-top: 12px;
+}
+.form-task p {
+  color: #9d9d9d;
 }
 @media screen and (max-width: 1200px) {
   .first-row .map-wrap {
@@ -367,13 +435,6 @@ input::placeholder {
   #map {
     height: 65vh;
     background: #0189e1;
-  }
-  .prices {
-    flex-direction: column;
-    align-items: center;
-  }
-  .or {
-    margin: 1rem 0 0.5rem;
   }
   input {
     width: 100% !important;

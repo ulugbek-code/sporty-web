@@ -2,15 +2,15 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-7 showcase-content">
-        <h1 class="fw-bold">Один абонемент</h1>
-        <h1 class="fw-bold">100+ залов</h1>
+        <h1 class="fw-bold">Учитесь когда угодно,</h1>
+        <h1 class="fw-bold">и где угодно</h1>
         <p class="my-3">
-          Занятия без ограничений в фитнес-клубах и спортивных комплексах
+          Обучение без ограничений в более 100 учебных заведениях
         </p>
         <button class="btn btn-primary px-4">Купить абонемент</button>
       </div>
       <div class="col-lg-5 running-man d-none d-lg-block">
-        <img src="../../assets/ovals-behindrunninman.svg" alt="" />
+        <img src="../../assets/girl.png" alt="" />
       </div>
       <div class="d-flex justify-content-between">
         <div class="scroll-down">
@@ -32,7 +32,7 @@ export default {};
 
 <style scoped>
 .showcase-content {
-  height: 80vh;
+  height: 75vh;
   padding: 8rem 0 0 6rem;
   background: url("../../assets/v-sign.svg");
   background-size: contain;
@@ -47,11 +47,7 @@ export default {};
 .write-down button {
   font-size: 15px;
 }
-.running-man {
-  background: url("../../assets/runninman.png") 1rem 4rem;
-  background-size: 28rem;
-  background-repeat: no-repeat;
-}
+
 .running-man img {
   width: 120%;
   top: 1rem;
@@ -81,7 +77,7 @@ export default {};
   margin: 2px;
 }
 h1 {
-  font-size: 4rem;
+  font-size: 3.6rem;
 }
 @keyframes animate {
   0% {

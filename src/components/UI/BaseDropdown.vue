@@ -102,11 +102,11 @@ export default {
   text-align: left;
   outline: none;
   font-size: 14px;
-  line-height: 36px;
 }
 
 .custom-select .selected {
   background: #fff;
+  padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid #ced4da;
   color: #212529;
@@ -129,8 +129,8 @@ export default {
 .custom-select .selected:after {
   position: absolute;
   content: "";
-  transition: all 0.3s ease;
-  top: 18px;
+  transition: all 0.2s ease;
+  top: 15px;
   right: 1em;
   width: 0;
   height: 0;
@@ -138,7 +138,7 @@ export default {
   border-color: #016bd4 transparent transparent transparent;
 }
 .custom-select .selected.open:after {
-  top: 12px;
+  top: 10px;
   transform: rotate(180deg);
 }
 .custom-select .items {
@@ -158,6 +158,7 @@ export default {
 }
 .custom-select .items div {
   position: relative;
+  padding: 6px 12px;
   color: rgb(68, 68, 68);
   border-top: 0.1px solid #ced4da;
   padding-left: 1em;
