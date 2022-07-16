@@ -14,14 +14,14 @@
         <span class="navbar-toggler-icon"></span>
         <span class="navbar-toggler-icon"></span>
       </button>
-      <a class="navbar-brand" href="#">
+      <router-link class="navbar-brand" to="/">
         <img src="../../assets/v2w.svg" alt="" />
-      </a>
+      </router-link>
       <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
         <ul class="navbar-nav me-auto mb-3 mb-lg-0"></ul>
         <div class="nav-wrap">
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item mx-3">
+            <li class="nav-item mx-3 d-none d-md-block">
               <a class="nav-link fw-bold" href="#places">Заведения</a>
             </li>
             <!-- <li>
@@ -33,13 +33,13 @@
               </div>
             </li> -->
             <li class="nav-item mx-3">
-              <router-link to="/sign-in">
+              <router-link to="/sign-in" target="_blank">
                 <button class="btn open px-3">Вход</button>
               </router-link>
             </li>
             <li class="nav-item mx-3">
               <button class="btn btn-primary reg">
-                <a href="https://ehub-survey.uz/partners" target="_blank">
+                <a href="https://survey.ehub.uz/partners">
                   Зарегистрировать заведение
                 </a>
               </button>
@@ -105,7 +105,6 @@ li a {
 }
 .navbar-nav {
   display: flex;
-  align-items: center;
 }
 .nav-wrap button {
   font-size: 15px;
@@ -130,6 +129,9 @@ button a {
     flex-direction: column;
     box-shadow: none;
     border-color: rgba(0, 0, 0, 0.1);
+  }
+  .navbar-nav .nav-item {
+    margin: 8px 0;
   }
 }
 @media (max-width: 576px) {

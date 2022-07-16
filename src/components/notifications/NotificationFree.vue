@@ -4,10 +4,15 @@
       <img src="../../assets/free.svg" alt="" />
       <h4 class="mb-0 mx-3">Бесплатные занятия</h4>
       <div>
-        <p class="mb-0">12 <span class="mx-1 new">new</span></p>
+        <p class="mb-0">
+          {{ filteredNewLessons?.length }}
+          <span v-if="filteredNewLessons?.length > 0" class="mx-1 new"
+            >new</span
+          >
+        </p>
       </div>
     </div>
-    <table class="table">
+    <table v-if="lessons?.length" class="table">
       <tbody>
         <tr class="active">
           <td>ФИО</td>
@@ -17,40 +22,35 @@
           <td>Уровень</td>
           <td>Время</td>
         </tr>
-        <tr class="active">
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>А6</td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
-          <td class="text-center">
-            <span class="new">new</span><br />
-            <span>12:22</span>
+        <tr
+          v-for="(lesson, index) in sortedArr"
+          :key="lesson"
+          :class="lesson?.is_new === 'new' ? 'active' : ''"
+        >
+          <td>{{ lesson?.user_full_name }}</td>
+          <td>{{ enforcePhoneFormat(lesson?.phone_number) }}</td>
+          <td>{{ lesson.course_name }}</td>
+          <td>{{ lesson?.group_name }}</td>
+          <td>{{ lesson?.level_name }}</td>
+          <td>
+            <p v-for="(each, i) in lesson.lesson_time" :key="each">
+              <span
+                v-for="(f, idx) in getWeekdays({ index: index, idx: i })"
+                :key="idx"
+                >{{ f }}{{ idx === each.week.length - 1 ? "" : ", " }}</span
+              >
+              {{ each?.start_date.slice(0, 5) }} -
+              {{ each?.finish_date.slice(0, 5) }}
+            </p>
           </td>
-        </tr>
-        <tr>
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>А6</td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
           <td class="text-center">
-            <!-- <span class="new">new</span><br /> -->
-            <span>12:22</span>
-          </td>
-        </tr>
-        <tr>
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>А6</td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
-          <td class="text-center">
-            <!-- <span class="new">new</span><br /> -->
-            <span>12:22</span>
+            <span
+              v-if="lesson?.is_new === 'new'"
+              class="new"
+              @click="toggleStatus(lesson.operation_id)"
+              >new</span
+            ><br />
+            <span>{{ filterDate(lesson.create_at) }}</span>
           </td>
         </tr>
       </tbody>
@@ -59,7 +59,73 @@
 </template>
 
 <script>
-export default {};
+export default {
+  props: ["lessons", "period"],
+  data() {
+    return {
+      weeks: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
+    };
+  },
+  computed: {
+    filteredNewLessons() {
+      if (this.lessons) {
+        return this.lessons.filter((course) => course.is_new === "new");
+      } else return null;
+    },
+    sortedArr() {
+      if (this.lessons.length) {
+        let arr = this.lessons;
+        return arr.sort((a, b) => {
+          return a.is_new < b.is_new ? -1 : a.is_new > b.is_new ? 1 : 0;
+          // if (a.is_new < b.is_new) {
+          //   return -1;
+          // }
+          // if (a.is_new > b.is_new) {
+          //   return 1;
+          // }
+          // return 0;
+        });
+      } else {
+        return null;
+      }
+    },
+  },
+  methods: {
+    toggleStatus(id) {
+      this.$store.dispatch("toggleStatus", {
+        property: "subscription",
+        id: id,
+        period: this.period,
+      });
+    },
+    getWeekdays(val) {
+      return this.lessons[val.index].lesson_time[val.idx]?.week.map((day) =>
+        this.weeks.find((week, index) => ++index == day)
+      );
+    },
+    enforcePhoneFormat(phone) {
+      return `(${phone.slice(4, 6)}) ${phone.slice(6, 9)}-${phone.slice(
+        9,
+        11
+      )}-${phone.slice(11, 13)}`;
+    },
+    filterDate(date) {
+      let now = new Date().getDate();
+      let serverDate = new Date(date).getDate();
+      if (now === serverDate) {
+        return (
+          date.substring(8, 10) +
+          "." +
+          date.substring(5, 7) +
+          " " +
+          date.substring(11, 16)
+        );
+      } else {
+        return date.substring(11, 16);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -85,10 +151,7 @@ td {
   color: #9d9d9d;
   padding: 4px;
 }
-.active td {
-  color: #1b1b1d;
-  font-weight: 600;
-}
+
 tr:first-child td {
   font-weight: bolder;
 }
@@ -97,5 +160,20 @@ tr:first-child td {
   color: #fff;
   border-radius: 9px;
   padding: 0px 8px 1px;
+  cursor: pointer;
+}
+.new:active {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+td p {
+  margin: 0;
+  font-size: 10px;
+  color: #9d9d9d;
+}
+.active td,
+.active td p {
+  color: #1b1b1d;
+  font-weight: 600;
 }
 </style>

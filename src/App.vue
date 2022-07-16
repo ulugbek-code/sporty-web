@@ -1,14 +1,44 @@
 <template>
-  <nav-bar></nav-bar>
-  <router-view></router-view>
+  <!-- <nav-bar></nav-bar> -->
+  <base-dialog :show="isError" @close="cancelErr">
+    <template #default>
+      <div class="form-task text-center">
+        <img src="./assets/remove.png" alt="" />
+        <h2 class="mt-2">Не отправлено</h2>
+        <p>{{ isError }}</p>
+      </div>
+      <div class="d-grid text-center mt-5">
+        <button @click="cancelErr" class="w-100 btn btn-primary py-2 px-5">
+          Заново
+        </button>
+      </div>
+    </template>
+  </base-dialog>
+  <router-view v-slot="slotProps">
+    <transition name="route" mode="out-in">
+      <component :is="slotProps.Component"></component>
+    </transition>
+  </router-view>
 </template>
-
 <script>
-import NavBar from "./components/UI/NavBar.vue";
+import { defineAsyncComponent } from "vue";
+const BaseDialog = defineAsyncComponent(() =>
+  import("./components/UI/BaseDialog.vue")
+);
 export default {
   name: "App",
   components: {
-    NavBar,
+    BaseDialog,
+  },
+  computed: {
+    isError() {
+      return this.$store.getters.getError;
+    },
+  },
+  methods: {
+    cancelErr() {
+      this.$store.dispatch("cancelError");
+    },
   },
 };
 </script>
@@ -44,5 +74,30 @@ button {
     transparent 75%,
     transparent
   );
+}
+td {
+  vertical-align: middle;
+}
+.route-enter-from {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+.route-leave-to,
+.nav-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.route-enter-active {
+  transition: all 0.2s ease-out;
+}
+.route-leave-active,
+.nav-leave-active {
+  transition: all 0.2s ease-in;
+}
+.route-enter-to,
+.route-leave-from,
+.nav-leave-from {
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

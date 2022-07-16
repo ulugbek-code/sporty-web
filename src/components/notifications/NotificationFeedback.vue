@@ -1,98 +1,99 @@
 <template>
   <div class="course-wrap table-responsive">
+    <base-dialog :show="showEach" @close="cancelErr">
+      <template #default>
+        <div class="d-flex gap-4 dialog">
+          <span @click="cancelErr" id="multiple">x</span>
+          <div class="first-pp">
+            <div>
+              <h6>{{ eachReview.user_full_name }}</h6>
+              <p>{{ enforcePhoneFormat(eachReview.phone_number) }}</p>
+            </div>
+            <div>
+              <h6>{{ eachReview.module_name }}</h6>
+              <p>{{ formatDate(eachReview.create_at) }}</p>
+            </div>
+          </div>
+          <div class="pp-comment">
+            <div>
+              <img
+                v-for="i in eachReview.rating"
+                :key="i"
+                src="../../assets/yellow-star.svg"
+                alt=""
+                class="yellow-star"
+              />
+              <img
+                v-for="j in calcSilverStar(eachReview.rating)"
+                :key="j"
+                src="../../assets/silver-star.svg"
+                alt=""
+              />
+            </div>
+            <div>
+              <h6>Комментарии</h6>
+              <span>{{ eachReview.comment }} </span>
+            </div>
+          </div>
+        </div>
+      </template>
+    </base-dialog>
+    <!--  -->
     <div class="header-tbl">
       <img src="../../assets/star.svg" alt="" />
       <h4 class="mb-0 mx-3">Отзывы</h4>
       <div>
-        <p class="mb-0">12 <span class="mx-1 new">new</span></p>
+        <p class="mb-0">
+          {{ filteredNewReviews?.length }}
+          <span v-if="filteredNewReviews?.length > 0" class="mx-1 new"
+            >new</span
+          >
+        </p>
       </div>
     </div>
-    <table class="table">
+    <table v-if="reviews?.length" class="table table-hover">
       <tbody>
         <tr class="active">
           <td>ФИО</td>
           <td>Тел</td>
           <td>Курсы</td>
           <td>Группа</td>
-          <td>Уровень</td>
-          <td>Время</td>
+          <td>Отзывы</td>
         </tr>
-        <tr class="active">
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
+        <tr
+          v-for="review in sortedArr"
+          :key="review"
+          class="each-section"
+          :class="review?.is_new === 'new' ? 'active' : ''"
+          @click="showDialog(review)"
+        >
+          <td>{{ review.user_full_name }}</td>
+          <td>{{ enforcePhoneFormat(review.phone_number) }}</td>
+          <td>{{ review.module_name }}</td>
           <td>
             <img
-              v-for="i in arr"
+              v-for="i in review.rating"
               :key="i"
               src="../../assets/yellow-star.svg"
               alt=""
               class="yellow-star"
             />
             <img
-              v-for="j in emptyStar"
+              v-for="j in calcSilverStar(review.rating)"
               :key="j"
               src="../../assets/silver-star.svg"
               alt=""
             />
           </td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
+          <td>{{ review.comment }}</td>
           <td class="text-center">
-            <span class="new">new</span><br />
-            <span>12:22</span>
-          </td>
-        </tr>
-        <tr>
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>
-            <img
-              v-for="i in arr"
-              :key="i"
-              src="../../assets/yellow-star.svg"
-              alt=""
-              class="yellow-star"
-            />
-            <img
-              v-for="j in emptyStar"
-              :key="j"
-              src="../../assets/silver-star.svg"
-              alt=""
-            />
-          </td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
-          <td class="text-center">
-            <!-- <span class="new">new</span><br /> -->
-            <span>12:22</span>
-          </td>
-        </tr>
-        <tr>
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>
-            <img
-              v-for="i in ++arr"
-              :key="i"
-              src="../../assets/yellow-star.svg"
-              alt=""
-              class="yellow-star"
-            />
-            <img
-              v-for="j in emptyStar"
-              :key="j"
-              src="../../assets/silver-star.svg"
-              alt=""
-            />
-          </td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
-          <td class="text-center">
-            <!-- <span class="new">new</span><br /> -->
-            <span>12:22</span>
+            <span
+              v-if="review?.is_new === 'new'"
+              class="new"
+              @click.stop="toggleStatus(review.review_id)"
+              >new</span
+            ><br />
+            <span>{{ filterDate(review.create_at) }}</span>
           </td>
         </tr>
       </tbody>
@@ -101,15 +102,86 @@
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue";
+const BaseDialog = defineAsyncComponent(() => import("../UI/BaseDialog.vue"));
 export default {
+  props: ["reviews", "period"],
+  components: {
+    BaseDialog,
+  },
   data() {
     return {
-      arr: 3,
+      showEach: false,
+      eachReview: {},
     };
   },
   computed: {
-    emptyStar() {
-      return 5 - this.arr;
+    filteredNewReviews() {
+      if (this.reviews) {
+        return this.reviews.filter((review) => review.is_new === "new");
+      } else return null;
+    },
+    sortedArr() {
+      if (this.reviews.length) {
+        let arr = this.reviews;
+        return arr.sort((a, b) => {
+          return a.is_new < b.is_new ? -1 : a.is_new > b.is_new ? 1 : 0;
+          // if (a.is_new < b.is_new) {
+          //   return -1;
+          // }
+          // if (a.is_new > b.is_new) {
+          //   return 1;
+          // }
+          // return 0;
+        });
+      } else {
+        return null;
+      }
+    },
+  },
+  methods: {
+    formatDate(date) {
+      return (
+        date.slice(8, 10) + "." + date.slice(5, 7) + " " + date.slice(11, 16)
+      );
+    },
+    cancelErr() {
+      this.showEach = false;
+    },
+    showDialog(review) {
+      this.showEach = true;
+      this.eachReview = review;
+    },
+    toggleStatus(id) {
+      this.$store.dispatch("toggleStatus", {
+        property: "review",
+        id: id,
+        period: this.period,
+      });
+    },
+    calcSilverStar(yellowStars) {
+      return 5 - yellowStars;
+    },
+    enforcePhoneFormat(phone) {
+      return `(${phone.slice(4, 6)}) ${phone.slice(6, 9)}-${phone.slice(
+        9,
+        11
+      )}-${phone.slice(11, 13)}`;
+    },
+    filterDate(date) {
+      let now = new Date().getDate();
+      let serverDate = new Date(date).getDate();
+      if (now === serverDate) {
+        return (
+          date.substring(8, 10) +
+          "." +
+          date.substring(5, 7) +
+          " " +
+          date.substring(11, 16)
+        );
+      } else {
+        return date.substring(11, 16);
+      }
     },
   },
 };
@@ -150,8 +222,42 @@ tr:first-child td {
   color: #fff;
   border-radius: 9px;
   padding: 0px 8px 1px;
+  cursor: pointer;
+}
+.new:active,
+.new:hover {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 .yellow-star {
   width: 15px;
+}
+.each-section {
+  cursor: pointer;
+}
+.each-section:active {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+}
+#multiple {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  color: #9d9d9d;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.dialog {
+  width: 500px;
+}
+.first-pp {
+  flex: 1;
+}
+.pp-comment {
+  flex: 2;
+}
+.pp-comment span {
+  color: #1b1b1d;
+  font-size: 13px;
 }
 </style>

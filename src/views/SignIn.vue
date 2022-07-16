@@ -1,23 +1,32 @@
 <template>
   <div id="sign-in-wrapper">
-    <div @click="toggleError" :class="{ 'red-shadow': error }" class="sign-in">
+    <div class="sign-in">
       <div class="form-img">
         <img src="../assets/edu.png" class="img-fluid" alt="" />
       </div>
       <h2 class="fw-bold">Войти в аккаунт</h2>
       <form @submit.prevent="" class="form">
         <div class="inp-wrap">
-          <span>Имя пользователя</span>
-          <input type="text" placeholder="Имя..." />
+          <span>Номер телефона</span>
+          <input
+            v-model="phoneNumber"
+            @input="enforcePhoneFormat()"
+            type="tel"
+            placeholder="Телефон..."
+          />
         </div>
         <div class="inp-wrap">
           <span>Пароль</span>
-          <input type="password" placeholder="Пароль..." />
+          <input
+            v-model="password"
+            type="password"
+            placeholder="Пароль..."
+            autocomplete=""
+          />
         </div>
-        <p id="error" v-if="error">{{ error }}</p>
         <button @click="signIn" class="btn btn-primary">Войти</button>
         <div class="forget">
-          <router-link to="/forget">Забыли пароль?</router-link>
+          <router-link to="/phone">Забыли пароль?</router-link>
         </div>
       </form>
       <!-- <p>Don't have an account yet? <router-link to="/signUp">Sign Up</router-link></p> -->
@@ -28,7 +37,54 @@
 </template>
 
 <script>
-export default {};
+import customAxios from "../api";
+export default {
+  data() {
+    return {
+      isEmpty: false,
+      phoneNumber: "",
+      password: "",
+    };
+  },
+  computed: {
+    resolvedNumber() {
+      return "+998" + this.phoneNumber.replace(/[() \s-]+/g, "");
+    },
+  },
+  methods: {
+    async signIn() {
+      if (!this.phoneNumber || !this.password) {
+        this.isEmpty = true;
+        return;
+      }
+      try {
+        const res = await customAxios.post("api-web-auth/login/", {
+          phone_number: this.resolvedNumber,
+          password: this.password,
+        });
+        localStorage.setItem("info", JSON.stringify(res.data[0]));
+
+        this.$router.replace("/notifications");
+      } catch (e) {
+        this.$store.dispatch("errorHandle", e);
+      }
+    },
+    enforcePhoneFormat() {
+      let x = this.phoneNumber
+        .replace(/\D/g, "")
+        .match(/(\d{0,2})(\d{0,3})(\d{0,4})/);
+      this.phoneNumber = !x[2]
+        ? x[1]
+        : "(" + x[1] + ") " + x[2] + (x[3] ? "-" + x[3] : "");
+      if (this.phoneNumber.length > 11) {
+        this.phoneNumber =
+          this.phoneNumber.substring(0, 11) +
+          "-" +
+          this.phoneNumber.substring(11);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>

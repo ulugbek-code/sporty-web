@@ -3,11 +3,14 @@
     <div class="header-tbl">
       <img src="../../assets/event.svg" alt="" />
       <h4 class="mb-0 mx-3">Ивенты</h4>
-      <div>
+      <!-- <div>
         <p class="mb-0">12 <span class="mx-1 new">new</span></p>
-      </div>
+      </div> -->
     </div>
-    <table class="table">
+    <div class="h-75 d-flex justify-content-center align-items-center">
+      Скоро...
+    </div>
+    <!-- <table class="table">
       <tbody>
         <tr class="active">
           <td>ФИО</td>
@@ -29,32 +32,8 @@
             <span>12:22</span>
           </td>
         </tr>
-        <tr>
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>А6</td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
-          <td class="text-center">
-            <!-- <span class="new">new</span><br /> -->
-            <span>12:22</span>
-          </td>
-        </tr>
-        <tr>
-          <td>Кирилл Сопранский</td>
-          <td>+998 93 995 5858</td>
-          <td>Курсы Английского Языка</td>
-          <td>А6</td>
-          <td>Beginner</td>
-          <td>14:00 - 15:30</td>
-          <td class="text-center">
-            <!-- <span class="new">new</span><br /> -->
-            <span>12:22</span>
-          </td>
-        </tr>
       </tbody>
-    </table>
+    </table> -->
   </div>
 </template>
 

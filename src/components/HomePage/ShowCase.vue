@@ -7,13 +7,22 @@
         <p class="my-3">
           Обучение без ограничений в более 100 учебных заведениях
         </p>
-        <button class="btn btn-primary px-4">Купить абонемент</button>
+        <div class="up-button">
+          <h6 class="mb-1">Вы студент?</h6>
+          <span
+            >Пройдите опрос, чтобы мы смогли подобрать наиболее подходящие для
+            вас курсы</span
+          >
+        </div>
+        <a href="https://survey.ehub.uz/clients">
+          <button class="btn btn-primary px-4">Перейти к опросу</button></a
+        >
       </div>
       <div class="col-lg-5 running-man d-none d-lg-block">
         <img src="../../assets/girl.png" alt="" />
       </div>
       <div class="d-flex justify-content-between">
-        <div class="scroll-down">
+        <div class="scroll-down d-none d-md-block">
           <img src="../../assets/scroll.png" alt="" />
         </div>
         <div class="write-down">
@@ -79,6 +88,14 @@ export default {};
 h1 {
   font-size: 3.6rem;
 }
+.up-button {
+  line-height: 19px;
+  width: 60%;
+  margin-bottom: 12px;
+}
+.up-button span {
+  font-size: 14px;
+}
 @keyframes animate {
   0% {
     opacity: 0;
@@ -111,7 +128,18 @@ h1 {
     font-size: 2rem;
   }
   .showcase-content {
-    padding: 4rem 0 0 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0 1rem;
+    background: url("../../assets/mobile-back.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    max-height: max-content;
+    padding-bottom: 0;
+    color: #fff;
+    text-align: center;
   }
 }
 </style>

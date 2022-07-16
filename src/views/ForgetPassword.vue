@@ -2,8 +2,8 @@
   <div class="forget-wrapper">
     <div class="forget-wrap">
       <h1>Подтвердите номер</h1>
-      <p><span>Код был отправлен на номер</span> +998 ** *** 90 91</p>
-      <form @submit.prevent="">
+      <p><span>Код был отправлен на номер</span> {{ hiddenPhone }}</p>
+      <form @submit.prevent="" class="text-center">
         <input
           v-model="val1"
           type="text"
@@ -32,22 +32,12 @@
           :class="val4 ? 'bm' : ''"
           maxlength="1"
         />
-        <input
-          v-model="val5"
-          type="text"
-          id="input-5"
-          :class="val5 ? 'bm' : ''"
-          maxlength="1"
-        />
-        <input
-          v-model="val6"
-          type="text"
-          id="input-6"
-          :class="val6 ? 'bm' : ''"
-          maxlength="1"
-        />
         <div class="d-grid mt-5">
-          <button class="btn btn-primary" :disabled="isFull">
+          <button
+            @click="setNewPass"
+            class="btn btn-primary"
+            :disabled="isFull"
+          >
             Подтвердить
           </button>
         </div>
@@ -57,6 +47,7 @@
 </template>
 
 <script>
+import customAxios from "../api";
 export default {
   data() {
     return {
@@ -64,20 +55,45 @@ export default {
       val2: "",
       val3: "",
       val4: "",
-      val5: "",
-      val6: "",
+      phoneNumber: JSON.parse(localStorage.getItem("phone-number")),
     };
   },
   computed: {
-    isFull() {
+    hiddenPhone() {
       return (
-        !this.val1 ||
-        !this.val2 ||
-        !this.val3 ||
-        !this.val4 ||
-        !this.val5 ||
-        !this.val6
+        this.phoneNumber.slice(0, 4) +
+        " ** *** " +
+        this.phoneNumber.slice(9, 11) +
+        " " +
+        this.phoneNumber.slice(11, 13)
       );
+    },
+    isFull() {
+      return !this.val1 || !this.val2 || !this.val3 || !this.val4;
+    },
+    fullValue() {
+      return this.val1 + this.val2 + this.val3 + this.val4;
+    },
+  },
+  methods: {
+    // deleteVal(e, val) {
+    //   if (e.code === "Backspace" && val === 2) {
+    //     document.getElementById("input-1").focus();
+    //   } else if (e.code === "Backspace" && val === 3) {
+    //     document.getElementById("input-2").focus();
+    //   } else if (e.code === "Backspace" && val === 4) {
+    //     document.getElementById("input-3").focus();
+    //   }
+    async setNewPass() {
+      try {
+        const res = await customAxios.post("api-web-auth/register/", {
+          code: this.fullValue,
+        });
+        localStorage.setItem("userId", JSON.stringify(res.data.user.id));
+        this.$router.replace("/new-password");
+      } catch (e) {
+        this.$store.dispatch("errorHandle", e);
+      }
     },
   },
   watch: {
@@ -101,22 +117,8 @@ export default {
       }
     },
     val4(val) {
-      if (val) {
-        document.getElementById("input-5").focus();
-      } else {
-        document.getElementById("input-3").focus();
-      }
-    },
-    val5(val) {
-      if (val) {
-        document.getElementById("input-6").focus();
-      } else {
-        document.getElementById("input-4").focus();
-      }
-    },
-    val6(val) {
       if (!val) {
-        document.getElementById("input-5").focus();
+        document.getElementById("input-3").focus();
       }
     },
   },

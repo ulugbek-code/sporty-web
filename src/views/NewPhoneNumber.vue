@@ -1,38 +1,21 @@
 <template>
   <div class="forget-wrapper">
     <div class="forget-wrap">
-      <h1>Придумайте новый пароль</h1>
+      <h1>Напишите свой номер телефона</h1>
       <form @submit.prevent="" class="form">
         <div class="inp-wrap">
-          <span>Новый пароль</span>
+          <span>Номер телефона</span>
           <input
-            v-model="password"
-            type="password"
-            autocomplete=""
-            placeholder="Пароль..."
-            :class="
-              (isEmpty && !password) || isNotMatch ? 'border border-danger' : ''
-            "
+            v-model="phoneNumber"
+            @input="enforcePhoneFormat()"
+            type="tel"
+            placeholder="телефон..."
+            :class="isEmpty && !phoneNumber ? 'border border-danger' : ''"
             @click="cancelEmpty"
           />
         </div>
-        <div class="inp-wrap">
-          <span>Подтвердите пароль</span>
-          <input
-            v-model="confirmPassword"
-            type="password"
-            autocomplete=""
-            placeholder="Пароль..."
-            :class="
-              (isEmpty && !confirmPassword) || isNotMatch
-                ? 'border border-danger'
-                : ''
-            "
-          />
-        </div>
-        <p v-if="isNotMatch" class="text-danger mb-0">Пароль не совпадает</p>
-        <button @click="changePassword" class="btn btn-primary">
-          Подтвердить
+        <button @click="sendPhoneNumber" class="btn btn-primary">
+          Отправить
         </button>
       </form>
     </div>
@@ -45,31 +28,46 @@ export default {
   data() {
     return {
       isEmpty: false,
-      isNotMatch: false,
-      password: "",
-      confirmPassword: "",
+      phoneNumber: "",
     };
   },
+  computed: {
+    resolvedNumber() {
+      return "+998" + this.phoneNumber.replace(/[() \s-]+/g, "");
+    },
+  },
   methods: {
+    enforcePhoneFormat() {
+      let x = this.phoneNumber
+        .replace(/\D/g, "")
+        .match(/(\d{0,2})(\d{0,3})(\d{0,4})/);
+      this.phoneNumber = !x[2]
+        ? x[1]
+        : "(" + x[1] + ") " + x[2] + (x[3] ? "-" + x[3] : "");
+      if (this.phoneNumber.length > 11) {
+        this.phoneNumber =
+          this.phoneNumber.substring(0, 11) +
+          "-" +
+          this.phoneNumber.substring(11);
+      }
+    },
     cancelEmpty() {
       this.isEmpty = false;
-      this.isNotMatch = false;
     },
-    async changePassword() {
-      if (!this.password || !this.confirmPassword) {
+    async sendPhoneNumber() {
+      if (!this.phoneNumber) {
         this.isEmpty = true;
         return;
       }
-      if (this.password !== this.confirmPassword) {
-        this.isNotMatch = true;
-        return;
-      }
       try {
-        await customAxios.post("api-web-auth/reset-password/", {
-          user_id: JSON.parse(localStorage.getItem("userId")),
-          new_password: this.password,
+        const res = await customAxios.post("api-web-auth/send_sms/", {
+          phone_number: this.resolvedNumber,
         });
-        this.$router.replace("/sign-in");
+        localStorage.setItem(
+          "phone-number",
+          JSON.stringify(res.data.phone_number)
+        );
+        this.$router.replace("/forget");
       } catch (e) {
         this.$store.dispatch("errorHandle", e);
       }
@@ -162,12 +160,12 @@ input::placeholder {
 input.border-danger::placeholder {
   color: #dc3545;
 }
-.forget-wrap {
-  margin: 0 1rem;
-}
 @media (max-width: 576px) {
   h1 {
-    font-size: 1.4rem;
+    font-size: 1.3rem;
+  }
+  .forget-wrap {
+    margin: 0 1rem;
   }
 }
 </style>

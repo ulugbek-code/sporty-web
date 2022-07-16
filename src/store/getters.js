@@ -1,4 +1,7 @@
 export default {
+  getError(state) {
+    return state.error;
+  },
   getAuth(state) {
     return state.isAuth;
   },
@@ -10,5 +13,8 @@ export default {
   },
   moduleShort(state) {
     return state.moduleShort;
+  },
+  qr(state) {
+    return state.qr;
   },
 };

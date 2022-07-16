@@ -1,19 +1,47 @@
 <template>
-  <div class="notifications-wrapper">
+  <div @click="toggleCalendarPP" class="notifications-wrapper">
     <div class="app-container">
-      <notification-header @getNotification="getNotf"></notification-header>
-      <div v-if="!isGanttChart" class="parent">
-        <notification-course class="child div1"></notification-course>
-        <notification-free class="child div2"></notification-free>
-        <notification-event class="child div3"></notification-event>
-        <notification-feedback class="child div4"></notification-feedback>
+      <notification-header
+        :notifications="allNewItems"
+        :isCalendarOpen="isCalendarOpen"
+        :isSignOutVisible="isSignOutVisible"
+        :period="period"
+        :showBelow="showBelow"
+        @getNotification="getNotf"
+        @getInnerSignOut="getInnerSignOut"
+        @toggleCalendar="getInnerToggle"
+        @sendDates="getDates"
+      ></notification-header>
+      <div v-if="showBelow === 'ntf'" class="parent">
+        <notification-course
+          :period="period"
+          :courses="notifications[0]?.courses"
+          class="child div1"
+        ></notification-course>
+        <!-- {{ notifications[0]?.reviews[0] }} -->
+        <notification-free
+          :period="period"
+          :lessons="notifications[0]?.free_lessons"
+          @new-items="getNewFree"
+          class="child div2"
+        ></notification-free>
+        <notification-feedback
+          :period="period"
+          :reviews="notifications[0]?.reviews"
+          class="child div3"
+        ></notification-feedback>
+        <notification-event class="child div4"></notification-event>
       </div>
-      <div v-else>hello</div>
+      <div v-else-if="showBelow === 'qr'">
+        <q-r-code></q-r-code>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import { defineAsyncComponent } from "vue";
+const QRCode = defineAsyncComponent(() => import("./QR.vue"));
 import NotificationHeader from "../components/notifications/NotificationHeader.vue";
 import NotificationCourse from "../components/notifications/NotificationCourse.vue";
 import NotificationFree from "../components/notifications/NotificationFree.vue";
@@ -27,28 +55,74 @@ export default {
     NotificationFree,
     NotificationEvent,
     NotificationFeedback,
+    QRCode,
   },
   data() {
     return {
-      isGanttChart: false,
+      showBelow: "ntf",
+      isCalendarOpen: false,
+      isSignOutVisible: false,
+      period: {
+        stDay: "",
+        fnDay: "",
+      },
     };
   },
   computed: {
     notifications() {
       return this.$store.getters.allNotifications;
     },
+    filteredNewLessons() {
+      if (this.notifications.length) {
+        return this.notifications[0]?.courses?.filter(
+          (course) => course.is_new === "new"
+        ).length;
+      } else return null;
+    },
+    filteredNewFree() {
+      if (this.notifications.length) {
+        return this.notifications[0]?.free_lessons?.filter(
+          (course) => course.is_new === "new"
+        ).length;
+      } else return null;
+    },
+    filteredReviews() {
+      if (this.notifications.length) {
+        return this.notifications[0]?.reviews?.filter(
+          (course) => course.is_new === "new"
+        ).length;
+      } else return null;
+    },
+    allNewItems() {
+      return (
+        this.filteredNewLessons + this.filteredNewFree + this.filteredReviews
+      );
+    },
   },
   methods: {
+    getDates(val) {
+      this.period.stDay = val.startDate;
+      this.period.fnDay = val.finishDate;
+    },
+    getInnerToggle() {
+      this.isCalendarOpen = !this.isCalendarOpen;
+    },
+    getInnerSignOut() {
+      this.isSignOutVisible = !this.isSignOutVisible;
+    },
+    toggleCalendarPP() {
+      if (this.isCalendarOpen) this.isCalendarOpen = !this.isCalendarOpen;
+      if (this.isSignOutVisible) this.isSignOutVisible = !this.isSignOutVisible;
+    },
+    getNewFree(val) {
+      console.log(val);
+    },
     getNotf(val) {
-      if (val) {
-        this.isGanttChart = true;
-      } else {
-        this.isGanttChart = false;
-      }
+      this.showBelow = val;
     },
   },
   async created() {
-    this.$store.dispatch("getNotifications");
+    await this.$store.dispatch("getNotifications");
   },
 };
 </script>
@@ -72,7 +146,7 @@ export default {
 }
 
 .app-container {
-  width: 92%;
+  width: 95%;
   margin: 0 auto;
 }
 .notifications-wrapper {

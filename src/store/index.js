@@ -8,6 +8,9 @@ const store = createStore({
   state() {
     return {
       isAuth: false,
+      token: "",
+      error: "",
+      qr: "",
       questions: [],
       allNotifications: [],
       moduleShort: [],

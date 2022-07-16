@@ -20,8 +20,14 @@
           <span>({{ eachClass.number_reviews }} отзывов)</span>
         </div>
       </div>
-      <div class="place-right">
+      <div v-if="eachClass?.logo" class="place-right">
         <img :src="baseUrl + eachClass.logo" alt="" />
+      </div>
+      <div v-else class="place-right">
+        <img
+          src="https://icon-library.com/images/no-image-available-icon/no-image-available-icon-11.jpg"
+          alt=""
+        />
       </div>
     </div>
   </div>
@@ -43,7 +49,7 @@
             :aria-current="idx == 0 ? true : false"
           ></button>
         </div>
-        <div class="carousel-inner">
+        <div v-if="each?.images.length" class="carousel-inner">
           <div
             v-for="(img, idx) in each?.images"
             :key="img"
@@ -51,6 +57,15 @@
             :class="idx == 0 ? 'active' : ''"
           >
             <img :src="baseUrl + img" class="w-100" alt="..." />
+          </div>
+        </div>
+        <div v-else class="carousel-inner">
+          <div class="carousel-item active">
+            <img
+              src="https://www.theiasilver.com/index.php/images/products/16466622596226127337f7c.jpg"
+              class="w-100"
+              alt="..."
+            />
           </div>
         </div>
         <div id="title" class="text-center">
@@ -70,7 +85,7 @@
           </div>
         </div>
         <hr />
-        <div class="categories mb-3">
+        <div v-if="each?.classes?.length" class="categories mb-3">
           <span v-for="(clas, idx) in each.classes" :key="clas.id">
             {{ clas?.category?.name
             }}{{ ++idx === each.classes.length ? "" : ", " }}
@@ -78,7 +93,7 @@
         </div>
         <div class="facilities mb-3">
           <h5 class="mb-3">Какие удобства предлагает заведение</h5>
-          <div v-if="filteredFacilities.length" class="inner-facilities">
+          <div v-if="filteredFacilities?.length" class="inner-facilities">
             <div
               v-for="fac in filteredFacilities"
               :key="fac.name"
@@ -93,9 +108,7 @@
           <h5 class="mb-1">Описание заведения</h5>
           <div class="hide-desc" :class="isHidden ? 'show-desc' : ''">
             <p class="mb-0">
-              {{ each.description }} Lorem ipsum dolor sit amet consectetur
-              adipisicing elit. Molestias, quisquam? adipisicing elit.
-              Molestias, quisquam?
+              {{ each.description }}
             </p>
           </div>
           <p id="more" @click="ShowDesc" :class="isHidden ? 'text-danger' : ''">
@@ -109,7 +122,7 @@
             <p class="mb-0">{{ this.formatPhone(each.phone_number) }}</p>
           </div>
         </div>
-        <div class="reviews">
+        <div v-if="each?.reviews?.length" class="reviews">
           <div
             class="r-title d-flex justify-content-between align-items-center mb-3"
           >
@@ -118,17 +131,17 @@
               Все отзывы <img src="../../assets/right-sign.svg" alt="" />
             </p>
           </div>
-          <div class="review my-2">
+          <div v-for="r in each.reviews" :key="r" class="review my-2">
             <div
               class="review-header d-flex justify-content-between align-items-center mb-1"
             >
               <div class="review-left">
-                <h5>Alex</h5>
-                <p>06.06.2022</p>
+                <h5>{{ r.user_full_name }}</h5>
+                <p>{{ r.create_at.slice(0, 10) }}</p>
               </div>
               <div class="review-right">
                 <img
-                  v-for="i in 5"
+                  v-for="i in r.rate"
                   :key="i"
                   src="../../assets/yellow-star.svg"
                   alt=""
@@ -137,36 +150,7 @@
             </div>
             <div class="review-content">
               <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Necessitatibus vitae nihil optio officia voluptas nobis dicta?
-                Culpa suscipit sint dolore at, quia minima molestiae a
-                cupiditate, necessitatibus, exercitationem ex facilis.
-              </p>
-            </div>
-          </div>
-          <div class="review my-2">
-            <div
-              class="review-header d-flex justify-content-between align-items-center mb-1"
-            >
-              <div class="review-left">
-                <h5>Alex</h5>
-                <p>06.06.2022</p>
-              </div>
-              <div class="review-right">
-                <img
-                  v-for="i in 5"
-                  :key="i"
-                  src="../../assets/yellow-star.svg"
-                  alt=""
-                />
-              </div>
-            </div>
-            <div class="review-content">
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                Necessitatibus vitae nihil optio officia voluptas nobis dicta?
-                Culpa suscipit sint dolore at, quia minima molestiae a
-                cupiditate, necessitatibus, exercitationem ex facilis.
+                {{ r.comment }}
               </p>
             </div>
           </div>
@@ -236,7 +220,7 @@ export default {
       }
     },
     filteredFacilities() {
-      if (this.getFacilities.length) {
+      if (this.getFacilities?.length) {
         return this.facilitiesImage.filter((fac) =>
           this.getFacilities.includes(fac.name)
         );
@@ -250,6 +234,7 @@ export default {
       this.isHidden = !this.isHidden;
     },
     getEachClass(eachClass) {
+      console.log(eachClass);
       this.each = eachClass;
     },
     formatPhone(phone) {
