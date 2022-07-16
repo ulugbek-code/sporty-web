@@ -6,36 +6,44 @@
       <form @submit.prevent="" class="text-center">
         <input
           v-model="val1"
-          type="text"
+          type="number"
+          min="0"
+          max="9"
           id="input-1"
+          class="code"
           :class="val1 ? 'bm' : ''"
-          maxlength="1"
         />
         <input
           v-model="val2"
-          type="text"
+          type="number"
+          min="0"
+          max="9"
           id="input-2"
-          :class="val2 ? 'bm' : ''"
-          maxlength="1"
+          class="code"
+          :class="val2 !== '' ? 'bm' : ''"
         />
         <input
           v-model="val3"
-          type="text"
+          type="number"
+          min="0"
+          max="9"
           id="input-3"
+          class="code"
           :class="val3 ? 'bm' : ''"
-          maxlength="1"
         />
         <input
           v-model="val4"
-          type="text"
+          type="number"
+          min="0"
+          max="9"
           id="input-4"
+          class="code"
           :class="val4 ? 'bm' : ''"
-          maxlength="1"
         />
         <div class="d-grid mt-5">
           <button
             @click="setNewPass"
-            class="btn btn-primary"
+            class="btn btn-primary code"
             :disabled="isFull"
           >
             Подтвердить
@@ -60,30 +68,24 @@ export default {
   },
   computed: {
     hiddenPhone() {
-      return (
-        this.phoneNumber.slice(0, 4) +
-        " ** *** " +
-        this.phoneNumber.slice(9, 11) +
-        " " +
-        this.phoneNumber.slice(11, 13)
-      );
+      if (this.phoneNumber) {
+        return (
+          this.phoneNumber.slice(0, 4) +
+          " ** *** " +
+          this.phoneNumber.slice(9, 11) +
+          " " +
+          this.phoneNumber.slice(11, 13)
+        );
+      } else return null;
     },
     isFull() {
       return !this.val1 || !this.val2 || !this.val3 || !this.val4;
     },
     fullValue() {
-      return this.val1 + this.val2 + this.val3 + this.val4;
+      return "" + this.val1 + this.val2 + this.val3 + this.val4;
     },
   },
   methods: {
-    // deleteVal(e, val) {
-    //   if (e.code === "Backspace" && val === 2) {
-    //     document.getElementById("input-1").focus();
-    //   } else if (e.code === "Backspace" && val === 3) {
-    //     document.getElementById("input-2").focus();
-    //   } else if (e.code === "Backspace" && val === 4) {
-    //     document.getElementById("input-3").focus();
-    //   }
     async setNewPass() {
       try {
         const res = await customAxios.post("api-web-auth/register/", {
@@ -93,39 +95,68 @@ export default {
         this.$router.replace("/new-password");
       } catch (e) {
         this.$store.dispatch("errorHandle", e);
+        // Неверный смс-код
       }
     },
   },
-  watch: {
-    val1(val) {
-      if (val) {
-        document.getElementById("input-2").focus();
-      }
-    },
-    val2(val) {
-      if (val) {
-        document.getElementById("input-3").focus();
-      } else {
-        document.getElementById("input-1").focus();
-      }
-    },
-    val3(val) {
-      if (val) {
-        document.getElementById("input-4").focus();
-      } else {
-        document.getElementById("input-2").focus();
-      }
-    },
-    val4(val) {
-      if (!val) {
-        document.getElementById("input-3").focus();
-      }
-    },
+  mounted() {
+    const codes = document.querySelectorAll(".code");
+
+    codes[0].focus();
+
+    codes.forEach((code, idx) => {
+      code.addEventListener("keydown", (e) => {
+        if (e.key >= 0 && e.key <= 9 && codes[idx + 1] !== undefined) {
+          codes[idx].value = "";
+          setTimeout(() => codes[idx + 1].focus(), 10);
+        } else if (e.key === "Backspace" && codes[idx - 1] !== undefined) {
+          setTimeout(() => codes[idx - 1].focus(), 10);
+        }
+      });
+    });
   },
+  // watch: {
+  //   val1(val) {
+  //     if (val) {
+  //       document.getElementById("input-2").focus();
+  //     }
+  //   },
+  //   val2(val) {
+  //     if (val === "a") {
+  //       document.getElementById("input-1").focus();
+  //     } else if (val) {
+  //       document.getElementById("input-3").focus();
+  //     } else {
+  //       document.getElementById("input-1").focus();
+  //     }
+  //   },
+  //   val3(val) {
+  //     if (val) {
+  //       document.getElementById("input-4").focus();
+  //     } else {
+  //       document.getElementById("input-2").focus();
+  //     }
+  //   },
+  //   val4(val) {
+  //     if (!val) {
+  //       document.getElementById("input-3").focus();
+  //     }
+  //   },
+  // },
 };
 </script>
 
 <style scoped>
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
 .forget-wrapper {
   width: 100%;
   height: 100vh;

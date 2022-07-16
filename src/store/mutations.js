@@ -5,7 +5,7 @@ export default {
   },
   errorHandle(state, payload) {
     if (payload.request.status === 400) {
-      state.error = "Логин или пароль неверный!";
+      state.error = payload.response.data; //"Логин или пароль неверный!";
       return;
     }
     if (payload.request.status === 401) {
