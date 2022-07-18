@@ -59,12 +59,15 @@ export default {
   },
   data() {
     return {
+      fetchTimeInterval: null,
       showBelow: "ntf",
       isCalendarOpen: false,
       isSignOutVisible: false,
       period: {
-        stDay: "",
-        fnDay: "",
+        stDay: new Date().toISOString().slice(0, 10),
+        fnDay: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+          .toISOString()
+          .slice(0, 10),
       },
     };
   },
@@ -100,6 +103,12 @@ export default {
     },
   },
   methods: {
+    startFetching() {
+      this.fetchTimeInterval = setInterval(
+        () => this.$store.dispatch("getNotifications", this.period),
+        60000
+      );
+    },
     getDates(val) {
       this.period.stDay = val.startDate;
       this.period.fnDay = val.finishDate;
@@ -123,6 +132,10 @@ export default {
   },
   async created() {
     await this.$store.dispatch("getNotifications");
+    this.startFetching();
+  },
+  unmounted() {
+    clearInterval(this.fetchTimeInterval);
   },
 };
 </script>

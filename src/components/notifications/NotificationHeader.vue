@@ -47,7 +47,7 @@
           </transition>
         </div>
       </div>
-      <div class="right-bottom">
+      <div v-if="showBelow === 'ntf'" class="right-bottom">
         <div class="btn-group" role="group">
           <button
             @click="filterNotifications('today')"

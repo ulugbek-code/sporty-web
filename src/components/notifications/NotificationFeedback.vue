@@ -10,7 +10,13 @@
               <p>{{ enforcePhoneFormat(eachReview.phone_number) }}</p>
             </div>
             <div>
-              <h6>{{ eachReview.module_name }}</h6>
+              <h6>
+                {{
+                  eachReview.module_name
+                    ? eachReview.module_name
+                    : "Курс не указан"
+                }}
+              </h6>
               <p>{{ formatDate(eachReview.create_at) }}</p>
             </div>
           </div>
@@ -69,7 +75,7 @@
         >
           <td>{{ review.user_full_name }}</td>
           <td>{{ enforcePhoneFormat(review.phone_number) }}</td>
-          <td>{{ review.module_name }}</td>
+          <td>{{ review.module_name ? review.module_name : "-" }}</td>
           <td>
             <img
               v-for="i in review.rating"
@@ -85,14 +91,9 @@
               alt=""
             />
           </td>
-          <td>{{ review.comment }}</td>
+          <td id="view-30">{{ minimizeDesc(review.comment) }}</td>
           <td class="text-center">
-            <span
-              v-if="review?.is_new === 'new'"
-              class="new"
-              @click.stop="toggleStatus(review.review_id)"
-              >new</span
-            ><br />
+            <span v-if="review?.is_new === 'new'" class="new">new</span><br />
             <span>{{ filterDate(review.create_at) }}</span>
           </td>
         </tr>
@@ -140,6 +141,13 @@ export default {
     },
   },
   methods: {
+    minimizeDesc(desc) {
+      if (desc.length > 36) {
+        return desc.slice(0, 36) + "...";
+      } else {
+        return desc;
+      }
+    },
     formatDate(date) {
       return (
         date.slice(8, 10) + "." + date.slice(5, 7) + " " + date.slice(11, 16)
@@ -151,6 +159,7 @@ export default {
     showDialog(review) {
       this.showEach = true;
       this.eachReview = review;
+      this.toggleStatus(review.review_id);
     },
     toggleStatus(id) {
       this.$store.dispatch("toggleStatus", {
@@ -163,10 +172,14 @@ export default {
       return 5 - yellowStars;
     },
     enforcePhoneFormat(phone) {
-      return `(${phone.slice(4, 6)}) ${phone.slice(6, 9)}-${phone.slice(
-        9,
-        11
-      )}-${phone.slice(11, 13)}`;
+      if (phone) {
+        return `(${phone.slice(4, 6)}) ${phone.slice(6, 9)}-${phone.slice(
+          9,
+          11
+        )}-${phone.slice(11, 13)}`;
+      } else {
+        return "Не указано";
+      }
     },
     filterDate(date) {
       let now = new Date().getDate();
@@ -259,5 +272,8 @@ tr:first-child td {
 .pp-comment span {
   color: #1b1b1d;
   font-size: 13px;
+}
+#view-30 {
+  width: 30%;
 }
 </style>

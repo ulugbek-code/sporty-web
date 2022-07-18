@@ -12,7 +12,7 @@
         </p>
       </div>
     </div>
-    <table v-if="courses?.length" class="table">
+    <table v-if="courses?.length" class="table table-hover">
       <tbody>
         <tr class="active">
           <td>ФИО</td>
@@ -25,7 +25,9 @@
         <tr
           v-for="(course, index) in sortedArr"
           :key="course"
+          class="each-section"
           :class="course?.is_new === 'new' ? 'active' : ''"
+          @click="toggleStatus(course.subscription_id)"
         >
           <td>{{ course?.user_full_name }}</td>
           <td>{{ enforcePhoneFormat(course?.phone_number) }}</td>
@@ -44,12 +46,7 @@
             </p>
           </td>
           <td class="text-center">
-            <span
-              v-if="course?.is_new === 'new'"
-              class="new"
-              @click="toggleStatus(course.subscription_id)"
-              >new</span
-            ><br />
+            <span v-if="course?.is_new === 'new'" class="new">new</span><br />
             <span>{{ filterDate(course.create_at) }}</span>
           </td>
         </tr>
@@ -174,5 +171,12 @@ td p {
 .active td p {
   color: #1b1b1d;
   font-weight: 600;
+}
+.each-section {
+  cursor: pointer;
+}
+.each-section:active {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 </style>

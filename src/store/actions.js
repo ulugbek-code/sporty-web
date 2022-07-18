@@ -37,17 +37,25 @@ export default {
       context.commit("errorHandle", e);
     }
   },
-  async getNotifications(context) {
-    try {
+  async getNotifications(context, payload) {
+    let start, finish;
+    if (payload) {
+      start = payload.stDay;
+      finish = payload.fnDay;
+    } else {
       let tomorrow = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
         .toISOString()
         .slice(0, 10);
       let today = new Date().toISOString().slice(0, 10);
-      // ${JSON.parse(localStorage.getItem("info").user.id)?.token}
+      start = today;
+      finish = tomorrow;
+    }
+
+    try {
       const res = await customAxios.get(
         `subscription-list/filter_notification/?module_id=${
           JSON.parse(localStorage.getItem("info")).user.id
-        }&start_date=${today}&finish_date=${tomorrow}`,
+        }&start_date=${start}&finish_date=${finish}`,
         {
           headers: {
             Authorization: `token ${

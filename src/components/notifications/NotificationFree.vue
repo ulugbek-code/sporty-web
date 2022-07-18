@@ -25,7 +25,9 @@
         <tr
           v-for="(lesson, index) in sortedArr"
           :key="lesson"
+          class="each-section"
           :class="lesson?.is_new === 'new' ? 'active' : ''"
+          @click="toggleStatus(lesson.operation_id)"
         >
           <td>{{ lesson?.user_full_name }}</td>
           <td>{{ enforcePhoneFormat(lesson?.phone_number) }}</td>
@@ -44,12 +46,7 @@
             </p>
           </td>
           <td class="text-center">
-            <span
-              v-if="lesson?.is_new === 'new'"
-              class="new"
-              @click="toggleStatus(lesson.operation_id)"
-              >new</span
-            ><br />
+            <span v-if="lesson?.is_new === 'new'" class="new">new</span><br />
             <span>{{ filterDate(lesson.create_at) }}</span>
           </td>
         </tr>
@@ -175,5 +172,12 @@ td p {
 .active td p {
   color: #1b1b1d;
   font-weight: 600;
+}
+.each-section {
+  cursor: pointer;
+}
+.each-section:active {
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 </style>

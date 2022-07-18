@@ -212,7 +212,7 @@ export default {
       if (this.each) {
         return this.each.facilities
           .map((facility) =>
-            this.allQuestions[7].variants.find((v) => v.id == facility)
+            this.allQuestions[6].variants.find((v) => v.id == facility)
           )
           .map((v) => v.name);
       } else {
@@ -234,7 +234,6 @@ export default {
       this.isHidden = !this.isHidden;
     },
     getEachClass(eachClass) {
-      console.log(eachClass);
       this.each = eachClass;
     },
     formatPhone(phone) {
@@ -346,7 +345,8 @@ hr {
   background: #fff;
   padding: 4px 12px;
   border-radius: 10px;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,
+    rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
 }
 #title img {
   position: absolute;
