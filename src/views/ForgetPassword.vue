@@ -11,7 +11,7 @@
           max="9"
           id="input-1"
           class="code"
-          :class="val1 ? 'bm' : ''"
+          :class="val1 !== '' ? 'bm' : ''"
         />
         <input
           v-model="val2"
@@ -29,7 +29,7 @@
           max="9"
           id="input-3"
           class="code"
-          :class="val3 ? 'bm' : ''"
+          :class="val3 !== '' ? 'bm' : ''"
         />
         <input
           v-model="val4"
@@ -38,7 +38,7 @@
           max="9"
           id="input-4"
           class="code"
-          :class="val4 ? 'bm' : ''"
+          :class="val4 !== '' ? 'bm' : ''"
         />
         <div class="d-grid mt-5">
           <button
@@ -79,7 +79,12 @@ export default {
       } else return null;
     },
     isFull() {
-      return !this.val1 || !this.val2 || !this.val3 || !this.val4;
+      return (
+        this.val1 === "" ||
+        this.val2 === "" ||
+        this.val3 === "" ||
+        this.val4 === ""
+      );
     },
     fullValue() {
       return "" + this.val1 + this.val2 + this.val3 + this.val4;
@@ -91,7 +96,12 @@ export default {
         const res = await customAxios.post("api-web-auth/register/", {
           code: this.fullValue,
         });
-        localStorage.setItem("userId", JSON.stringify(res.data.user.id));
+        if (res.data.user.user_id) {
+          localStorage.setItem("userId", JSON.stringify(res.data.user.user_id));
+        } else {
+          localStorage.setItem("moduleId", JSON.stringify(res.data.user.id));
+        }
+        console.log(res.data);
         this.$router.replace("/new-password");
       } catch (e) {
         this.$store.dispatch("errorHandle", e);

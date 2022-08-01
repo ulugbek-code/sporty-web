@@ -1,6 +1,13 @@
 <template>
   <div class="custom-select" :tabindex="tabindex" @blur="open = false">
-    <div class="selected" :class="{ open: open }" @click="open = !open">
+    <div
+      class="selected"
+      :class="[
+        { open: open },
+        { activeBg: selected !== 'Выбрать день' && selected !== '' },
+      ]"
+      @click="open = !open"
+    >
       {{ selected }}
     </div>
     <div class="items" :class="{ selectHide: !open }">
@@ -8,12 +15,12 @@
         v-for="(option, i) of options"
         :key="i"
         @click="
-          selected = option;
+          selected = option.name;
           open = false;
-          $emit('input', option);
+          $emit('input', option.id);
         "
       >
-        {{ option }}
+        {{ option.name }}
       </div>
     </div>
   </div>
@@ -30,6 +37,9 @@ export default {
       type: String,
       required: false,
       default: null,
+    },
+    tt: {
+      required: false,
     },
     isError: {
       required: false,
@@ -85,6 +95,11 @@ export default {
     },
   },
   watch: {
+    tt(val) {
+      if (val === "odd" || val === "even") {
+        this.selected = "Выбрать день";
+      }
+    },
     submitted() {
       if (this.submitted === true) {
         this.selected = this.default;
@@ -97,52 +112,73 @@ export default {
 
 <style scoped>
 .custom-select {
+  height: 100%;
+  width: 170px;
+  font-size: 13px;
   position: relative;
+  /* position: relative;
   width: 100%;
   text-align: left;
   outline: none;
-  font-size: 14px;
+  font-size: 14px; */
 }
 
 .custom-select .selected {
   background: #fff;
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid #ced4da;
+  padding: 12px;
+  border-radius: 6px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  height: 100%;
+  /* border: 1px solid #ced4da; */
   color: #212529;
   padding-left: 1em;
   cursor: pointer;
   user-select: none;
 }
-.empty.custom-select .selected {
-  color: #dc3545 !important;
-  border: 1px solid #dc3545;
-}
 .custom-select .selected.default {
   color: #9d9d9d;
 }
 .custom-select .selected.open {
-  border: 1px solid #016bd4;
-  border-radius: 6px 6px 0px 0px;
+  /* border: 1px solid #016bd4; */
+  /* border-radius: 6px 6px 0px 0px; */
+  border-radius: 0px 6px 0px 0px;
 }
 
+.custom-select .selected.activeBg,
+.custom-select .selected:hover {
+  background: #016bd4;
+  color: #fff;
+}
 .custom-select .selected:after {
   position: absolute;
   content: "";
   transition: all 0.2s ease;
-  top: 15px;
-  right: 1em;
+  top: 20px;
+  right: 2em;
   width: 0;
   height: 0;
   border: 5px solid transparent;
   border-color: #016bd4 transparent transparent transparent;
 }
+.custom-select:hover .selected:after,
+.custom-select .selected.activeBg:after {
+  position: absolute;
+  content: "";
+  transition: all 0.2s ease;
+  top: 20px;
+  right: 2em;
+  width: 0;
+  height: 0;
+  border: 5px solid transparent;
+  border-color: #fff transparent transparent transparent;
+}
 .custom-select .selected.open:after {
-  top: 10px;
+  top: 15px;
   transform: rotate(180deg);
 }
 .custom-select .items {
-  max-height: 13rem;
+  max-height: max-content;
   overflow-y: scroll;
   color: #212529;
   border-radius: 0px 0px 6px 6px;

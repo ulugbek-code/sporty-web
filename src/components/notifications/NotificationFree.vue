@@ -101,15 +101,24 @@ export default {
       );
     },
     enforcePhoneFormat(phone) {
-      return `(${phone.slice(4, 6)}) ${phone.slice(6, 9)}-${phone.slice(
-        9,
-        11
-      )}-${phone.slice(11, 13)}`;
+      if (phone) {
+        return `(${phone.slice(4, 6)}) ${phone.slice(6, 9)}-${phone.slice(
+          9,
+          11
+        )}-${phone.slice(11, 13)}`;
+      } else {
+        return "-";
+      }
     },
     filterDate(date) {
-      let now = new Date().getDate();
-      let serverDate = new Date(date).getDate();
-      if (now === serverDate) {
+      let now = new Date();
+      if (
+        new Date(date).getDate() == now.getDate() &&
+        new Date(date).getMonth() == now.getMonth() &&
+        new Date(date).getFullYear() == now.getFullYear()
+      ) {
+        return date.substring(11, 16);
+      } else {
         return (
           date.substring(8, 10) +
           "." +
@@ -117,8 +126,6 @@ export default {
           " " +
           date.substring(11, 16)
         );
-      } else {
-        return date.substring(11, 16);
       }
     },
   },
@@ -130,16 +137,33 @@ export default {
   display: flex;
   gap: 8px;
   align-items: center;
-  padding-bottom: 14px;
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
+}
+tr:first-child {
+  position: sticky;
+  top: 64px;
+  background: #fff;
+}
+tr:first-child::after {
+  content: "";
+  height: 0.5px;
+  width: 100%;
+  position: absolute;
+  bottom: 2%;
+  left: 0;
+  z-index: 10;
+  background: #010101;
 }
 p {
   font-size: 13px;
   color: #9d9d9d;
   margin-top: 6px;
 }
-tr:first-child {
-  border-bottom: 1px solid #010101;
-}
+
 tr {
   border-bottom: 1px solid #efefef;
 }
@@ -167,6 +191,7 @@ td p {
   margin: 0;
   font-size: 10px;
   color: #9d9d9d;
+  /* pointer-events: none; */
 }
 .active td,
 .active td p {
@@ -175,6 +200,10 @@ td p {
 }
 .each-section {
   cursor: pointer;
+  pointer-events: none;
+}
+.each-section.active {
+  pointer-events: initial;
 }
 .each-section:active {
   box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px,

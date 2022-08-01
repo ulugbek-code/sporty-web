@@ -8,12 +8,23 @@ const store = createStore({
   state() {
     return {
       isAuth: false,
+      isCreateModule: false,
+      isCreateLevel: false, //for create module
+      isStudent: "empty",
+      isGroup: "empty",
+      currentStudent: null,
+      currentGroup: null,
       token: "",
       error: "",
       qr: "",
       questions: [],
       allNotifications: [],
       moduleShort: [],
+      timeTable: [],
+      moduleLists: [],
+      staffList: [],
+      studentList: [],
+      groupList: [],
     };
   },
   mutations: rootMutations,

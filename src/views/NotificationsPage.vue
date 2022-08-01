@@ -7,10 +7,12 @@
         :isSignOutVisible="isSignOutVisible"
         :period="period"
         :showBelow="showBelow"
+        :tt="filteredTT"
         @getNotification="getNotf"
         @getInnerSignOut="getInnerSignOut"
         @toggleCalendar="getInnerToggle"
         @sendDates="getDates"
+        @sendFilterTT="getTTFilter"
       ></notification-header>
       <div v-if="showBelow === 'ntf'" class="parent">
         <notification-course
@@ -35,6 +37,46 @@
       <div v-else-if="showBelow === 'qr'">
         <q-r-code></q-r-code>
       </div>
+      <div v-else-if="showBelow === 'tb'" class="parent-tt">
+        <time-table :filteredTT="filteredTT"></time-table>
+        <div id="add-room">
+          <button v-if="!isInput" @click="toggleInput" class="add-button btn">
+            <span><img src="../assets/plus.svg" alt="" /></span> Добавить
+            комнату
+          </button>
+          <div v-else class="d-flex gap-2">
+            <input
+              v-model.trim="newRoom"
+              @keydown.enter="addNewRoom"
+              type="text"
+              class="form-control"
+              placeholder="Название комнаты"
+            />
+            <button @click="isInput = false" class="btn btn-danger">
+              Отмена
+            </button>
+            <button
+              @click="addNewRoom"
+              class="btn btn-primary"
+              :disabled="!newRoom"
+            >
+              Отправить
+            </button>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="showBelow === 'student'">
+        <student-list></student-list>
+      </div>
+      <div v-else-if="showBelow === 'groups'">
+        <group-list></group-list>
+      </div>
+      <div v-else-if="showBelow === 'module'">
+        <module-list></module-list>
+      </div>
+      <div v-else-if="showBelow === 'staff'">
+        <staff-list></staff-list>
+      </div>
     </div>
   </div>
 </template>
@@ -42,11 +84,27 @@
 <script>
 import { defineAsyncComponent } from "vue";
 const QRCode = defineAsyncComponent(() => import("./QR.vue"));
+const TimeTable = defineAsyncComponent(() =>
+  import("../components/notifications/TimeTable.vue")
+);
+const ModuleList = defineAsyncComponent(() =>
+  import("../components/ModuleList/ModuleList.vue")
+);
+const GroupList = defineAsyncComponent(() =>
+  import("../components/GroupList/GroupList.vue")
+);
+const StudentList = defineAsyncComponent(() =>
+  import("../components/StudentList/StudentList.vue")
+);
+const StaffList = defineAsyncComponent(() =>
+  import("../components/StaffList/StaffList.vue")
+);
 import NotificationHeader from "../components/notifications/NotificationHeader.vue";
 import NotificationCourse from "../components/notifications/NotificationCourse.vue";
 import NotificationFree from "../components/notifications/NotificationFree.vue";
 import NotificationEvent from "../components/notifications/NotificationEvent.vue";
 import NotificationFeedback from "../components/notifications/NotificationFeedback.vue";
+import customAxios from "../api";
 
 export default {
   components: {
@@ -56,13 +114,21 @@ export default {
     NotificationEvent,
     NotificationFeedback,
     QRCode,
+    TimeTable,
+    ModuleList,
+    GroupList,
+    StudentList,
+    StaffList,
   },
   data() {
     return {
+      isInput: false,
+      newRoom: "",
       fetchTimeInterval: null,
       showBelow: "ntf",
       isCalendarOpen: false,
       isSignOutVisible: false,
+      filteredTT: "odd",
       period: {
         stDay: new Date().toISOString().slice(0, 10),
         fnDay: new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
@@ -109,6 +175,27 @@ export default {
         60000
       );
     },
+    async addNewRoom() {
+      if (this.newRoom) {
+        try {
+          await customAxios.post("room/", {
+            name: this.newRoom,
+            module: JSON.parse(localStorage.getItem("info")).user.id,
+            // module: 5,
+          });
+          await this.$store.dispatch("getFilteredTimeTable", this.filteredTT);
+        } catch (e) {
+          this.$store.dispatch("errorHandle", e);
+        }
+        this.isInput = false;
+      }
+    },
+    toggleInput() {
+      this.isInput = true;
+    },
+    getTTFilter(val) {
+      this.filteredTT = val;
+    },
     getDates(val) {
       this.period.stDay = val.startDate;
       this.period.fnDay = val.finishDate;
@@ -133,6 +220,11 @@ export default {
   async created() {
     await this.$store.dispatch("getNotifications");
     this.startFetching();
+  },
+  watch: {
+    async filteredTT(val) {
+      await this.$store.dispatch("getFilteredTimeTable", val);
+    },
   },
   unmounted() {
     clearInterval(this.fetchTimeInterval);
@@ -177,12 +269,19 @@ export default {
   grid-column-gap: 16px;
   grid-row-gap: 16px;
 }
+.parent-tt {
+  margin-top: 1rem;
+  background: #fff;
+  height: 75vh;
+  border-radius: 15px;
+  overflow: auto;
+}
 .child {
   height: 36vh;
   background: #fff;
   border-radius: 15px;
   overflow-y: auto;
-  padding: 1rem;
+  padding: 0 1rem 1rem 1rem;
 }
 .div1 {
   grid-area: 1 / 1 / 2 / 2;
@@ -195,5 +294,30 @@ export default {
 }
 .div4 {
   grid-area: 2 / 2 / 3 / 3;
+}
+#add-room {
+  position: fixed;
+  bottom: 1vh;
+}
+#add-room .add-button img {
+  width: 11px;
+}
+#add-room input,
+#add-room button {
+  padding: 4px 12px;
+  font-size: 13px;
+}
+#add-room .add-button:hover,
+#add-room .add-button:active {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+}
+#add-room .add-button {
+  padding: 5px;
+  font-size: 14px;
+  color: #fff;
+  /* color: #9d9d9d; */
+  /* background: #ffffff; */
+  background: #016bd4;
 }
 </style>

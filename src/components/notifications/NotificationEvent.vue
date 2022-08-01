@@ -46,7 +46,8 @@ export default {};
   display: flex;
   gap: 8px;
   align-items: center;
-  padding-bottom: 14px;
+  /* padding-bottom: 14px; */
+  padding-top: 14px;
 }
 p {
   font-size: 13px;

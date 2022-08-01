@@ -63,6 +63,7 @@ export default {
           password: this.password,
         });
         localStorage.setItem("info", JSON.stringify(res.data[0]));
+        localStorage.setItem("token", JSON.stringify(res.data[0].token));
 
         this.$router.replace("/notifications");
       } catch (e) {

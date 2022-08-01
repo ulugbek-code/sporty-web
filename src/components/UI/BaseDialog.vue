@@ -2,7 +2,7 @@
   <teleport to="body">
     <div v-if="show" @click="$emit('close')"></div>
     <transition name="dialog">
-      <dialog open v-if="show">
+      <dialog open v-if="show" :class="zIndex ? 'less' : ''">
         <header v-if="title">
           <slot name="header">
             <h2>{{ title }}</h2>
@@ -32,6 +32,9 @@ export default {
     show: {
       required: true,
     },
+    zIndex: {
+      required: false,
+    },
   },
   emits: ["close"],
 };
@@ -45,7 +48,7 @@ div {
   height: 100vh;
   width: 100%;
   background-color: rgba(0, 0, 0, 0.75);
-  z-index: 10;
+  z-index: 11;
 }
 
 dialog {
@@ -54,6 +57,7 @@ dialog {
   /* left: 50%-12rem;
   transform: translate(-50%, -10%); */
   min-width: 300px;
+  max-width: 700px;
   /* max-height: 100vh;
   overflow: auto; */
   z-index: 100;
@@ -62,8 +66,10 @@ dialog {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
   padding: 0;
   margin: 0 auto;
-
   /* overflow: auto; */
+}
+dialog.less {
+  z-index: 90;
 }
 
 header {

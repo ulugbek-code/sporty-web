@@ -63,7 +63,7 @@
           <td>ФИО</td>
           <td>Тел</td>
           <td>Курсы</td>
-          <td>Группа</td>
+          <td>Рейтинг</td>
           <td>Отзывы</td>
         </tr>
         <tr
@@ -75,7 +75,9 @@
         >
           <td>{{ review.user_full_name }}</td>
           <td>{{ enforcePhoneFormat(review.phone_number) }}</td>
-          <td>{{ review.module_name ? review.module_name : "-" }}</td>
+          <td>
+            {{ review.module_name ? review.module_name : review.class_name }}
+          </td>
           <td>
             <img
               v-for="i in review.rating"
@@ -159,7 +161,7 @@ export default {
     showDialog(review) {
       this.showEach = true;
       this.eachReview = review;
-      this.toggleStatus(review.review_id);
+      if (review.is_new === "new") this.toggleStatus(review.review_id);
     },
     toggleStatus(id) {
       this.$store.dispatch("toggleStatus", {
@@ -182,9 +184,14 @@ export default {
       }
     },
     filterDate(date) {
-      let now = new Date().getDate();
-      let serverDate = new Date(date).getDate();
-      if (now === serverDate) {
+      let now = new Date();
+      if (
+        new Date(date).getDate() == now.getDate() &&
+        new Date(date).getMonth() == now.getMonth() &&
+        new Date(date).getFullYear() == now.getFullYear()
+      ) {
+        return date.substring(11, 16);
+      } else {
         return (
           date.substring(8, 10) +
           "." +
@@ -192,8 +199,6 @@ export default {
           " " +
           date.substring(11, 16)
         );
-      } else {
-        return date.substring(11, 16);
       }
     },
   },
@@ -205,15 +210,32 @@ export default {
   display: flex;
   gap: 8px;
   align-items: center;
-  padding-bottom: 14px;
+  padding: 14px 0;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #fff;
 }
+tr:first-child {
+  position: sticky;
+  top: 64px;
+  background: #fff;
+}
+tr:first-child::after {
+  content: "";
+  height: 0.5px;
+  width: 100%;
+  position: absolute;
+  bottom: 2%;
+  left: 0;
+  z-index: 10;
+  background: #010101;
+}
+
 p {
   font-size: 13px;
   color: #9d9d9d;
   margin-top: 6px;
-}
-tr:first-child {
-  border-bottom: 1px solid #010101;
 }
 tr {
   border-bottom: 1px solid #efefef;

@@ -56,6 +56,7 @@ export default {
       this.isNotMatch = false;
     },
     async changePassword() {
+      let payload;
       if (!this.password || !this.confirmPassword) {
         this.isEmpty = true;
         return;
@@ -64,11 +65,21 @@ export default {
         this.isNotMatch = true;
         return;
       }
-      try {
-        await customAxios.post("api-web-auth/reset-password/", {
+      if (localStorage.getItem("userId")) {
+        payload = {
           user_id: JSON.parse(localStorage.getItem("userId")),
           new_password: this.password,
-        });
+          phone_number: JSON.parse(localStorage.getItem("phone-number")),
+        };
+      } else {
+        payload = {
+          module_id: JSON.parse(localStorage.getItem("moduleId")),
+          new_password: this.password,
+          phone_number: JSON.parse(localStorage.getItem("phone-number")),
+        };
+      }
+      try {
+        await customAxios.post("api-web-auth/reset-password/", payload);
         this.$router.replace("/sign-in");
       } catch (e) {
         this.$store.dispatch("errorHandle", e);

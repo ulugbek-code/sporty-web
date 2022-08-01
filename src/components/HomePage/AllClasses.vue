@@ -107,11 +107,14 @@
         <div class="description mb-3">
           <h5 class="mb-1">Описание заведения</h5>
           <div class="hide-desc" :class="isHidden ? 'show-desc' : ''">
-            <p class="mb-0">
-              {{ each.description }}
-            </p>
+            <p class="mb-0">{{ each.description }}</p>
           </div>
-          <p id="more" @click="ShowDesc" :class="isHidden ? 'text-danger' : ''">
+          <p
+            v-if="each.description?.length > 50"
+            id="more"
+            @click="ShowDesc"
+            :class="isHidden ? 'text-danger' : ''"
+          >
             {{ dynamicDesc }}
           </p>
         </div>
@@ -127,9 +130,9 @@
             class="r-title d-flex justify-content-between align-items-center mb-3"
           >
             <h5 class="mb-0">Последние отзывы</h5>
-            <p class="mb-0">
+            <!-- <p class="mb-0">
               Все отзывы <img src="../../assets/right-sign.svg" alt="" />
-            </p>
+            </p> -->
           </div>
           <div v-for="r in each.reviews" :key="r" class="review my-2">
             <div
@@ -278,8 +281,7 @@ hr {
   padding: 12px;
   /* background: red; */
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 4px 0px,
-    rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.03);
 }
 .each-class-wrapper {
   padding: 0;
@@ -317,8 +319,7 @@ hr {
   margin: 6px 0;
   padding: 8px;
   border-radius: 10px;
-  box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px,
-    rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.1);
   cursor: pointer;
   transition: all 0.2s ease;
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="n-header">
-    <div v-if="Object.keys(business).length !== 0" class="left">
+    <!-- <div v-if="Object.keys(business)?.length !== 0" class="left"> -->
+    <div class="left">
       <div v-if="business?.user?.logo" class="img-left">
         <img :src="'https://e-hub.uz' + business.user.logo" alt="" />
       </div>
@@ -20,6 +21,26 @@
     <div class="right">
       <div class="right-top">
         <div
+          @click="getCircle('student')"
+          class="base circle-user"
+          :class="showBelow === 'student' ? 'active-bg' : ''"
+        ></div>
+        <div
+          @click="getCircle('groups')"
+          class="base circle-students"
+          :class="showBelow === 'groups' ? 'active-bg' : ''"
+        ></div>
+        <div
+          @click="getCircle('module')"
+          class="base circle-book"
+          :class="showBelow === 'module' ? 'active-bg' : ''"
+        ></div>
+        <div
+          @click="getCircle('tb')"
+          class="base circle0"
+          :class="showBelow === 'tb' ? 'active-bg' : ''"
+        ></div>
+        <div
           @click="getCircle('qr')"
           class="base circle1"
           :class="showBelow === 'qr' ? 'active-bg' : ''"
@@ -33,16 +54,26 @@
         </div>
         <div @click.stop="showSignOut" class="admin">
           <div class="admin-title">
-            <h5 class="mb-0">Aдмин Aдмин</h5>
+            <h5 class="mb-0">
+              {{ business?.user.user_full_name }}
+            </h5>
             <span>Администратор</span>
           </div>
           <div class="admin-img"></div>
           <transition name="dd">
             <div v-if="isSignOutVisible" @click.stop="" class="sign-out">
-              <div @click="signOut" class="dd d-flex align-items-center gap-2">
-                <p class="mb-0">Выйти</p>
-                <img src="../../assets/user.svg" alt="" />
+              <div @click="signOut" class="dd d-flex align-items-center gap-1">
+                <img src="../../assets/log-out.svg" alt="" />
+                <p class="mb-0">Выйти из аккаунта</p>
               </div>
+              <!-- <div
+                @click="selectStaff"
+                class="dd d-flex align-items-center gap-1"
+                :class="showBelow === 'staff' ? 'active-dd' : ''"
+              >
+                <img src="../../assets/bag.svg" alt="" />
+                <p class="mb-0">Сотрудники</p>
+              </div> -->
             </div>
           </transition>
         </div>
@@ -134,12 +165,78 @@
           </div>
         </div>
       </div>
+      <div v-else-if="showBelow === 'tb'" class="right-bottom">
+        <div class="btn-group" role="group">
+          <button
+            @click="filterTT('odd')"
+            type="button"
+            class="btn"
+            :class="tt === 'odd' ? 'active-tab' : ''"
+          >
+            Нечетные
+          </button>
+          <button
+            @click="filterTT('even')"
+            type="button"
+            class="btn"
+            :class="tt === 'even' ? 'active-tab' : ''"
+          >
+            Четные
+          </button>
+          <div>
+            <base-dropdown
+              :options="weeks"
+              :tt="tt"
+              @input="filterTT($event)"
+              default="Выбрать день"
+            ></base-dropdown>
+          </div>
+        </div>
+      </div>
+      <div v-else-if="showBelow === 'module'" class="right-bottom">
+        <input
+          @click="createLevel"
+          type="button"
+          class="btn btn-primary module-btn"
+          value="Добавить уровень"
+        />
+        <input
+          @click="createModule"
+          type="button"
+          class="btn btn-primary module-btn"
+          value="Добавить модуль"
+        />
+      </div>
+      <div v-else-if="showBelow === 'groups'" class="right-bottom">
+        <input
+          @click="createGroup"
+          type="button"
+          class="btn btn-primary module-btn"
+          value="Добавить группу"
+        />
+      </div>
+      <div v-else-if="showBelow === 'student'" class="right-bottom">
+        <input
+          @click="createStudent"
+          type="button"
+          class="btn btn-primary module-btn"
+          value="Добавить студента"
+        />
+      </div>
+      <!-- <div v-else-if="showBelow === 'staff'" class="right-bottom">
+        <input
+          type="button"
+          class="btn btn-primary module-btn"
+          value="Добавить сотрудника"
+        />
+      </div> -->
     </div>
   </div>
 </template>
 
 <script>
 import customAxios from "../../api";
+import BaseDropdown from "../UI/BaseDropdown.vue";
 export default {
   props: [
     "notifications",
@@ -147,8 +244,18 @@ export default {
     "isSignOutVisible",
     "period",
     "showBelow",
+    "tt",
   ],
-  emits: ["getNotification", "toggleCalendar", "getInnerSignOut", "sendDates"],
+  emits: [
+    "getNotification",
+    "toggleCalendar",
+    "getInnerSignOut",
+    "sendDates",
+    "sendFilterTT",
+  ],
+  components: {
+    BaseDropdown,
+  },
   data() {
     return {
       startDate: "",
@@ -156,9 +263,40 @@ export default {
       activeTab: "today",
       triggerCircle: false,
       business: JSON.parse(localStorage.getItem("info")),
+      weeks: [
+        {
+          id: "1",
+          name: "Понедельник",
+        },
+        { id: "2", name: "Вторник" },
+        { id: "3", name: "Среда" },
+        { id: "4", name: "Четверг" },
+        { id: "5", name: "Пятница" },
+        { id: "6", name: "Суббота" },
+        { id: "7", name: "Воскресенье" },
+      ],
     };
   },
   methods: {
+    createStudent() {
+      this.$store.dispatch("getIsStudent", "create");
+    },
+    createGroup() {
+      this.$store.dispatch("getIsGroup", "create");
+    },
+    selectStaff() {
+      this.showSignOut();
+      this.getCircle("staff");
+    },
+    createLevel() {
+      this.$store.dispatch("changeCreateLevel");
+    },
+    createModule() {
+      this.$store.dispatch("changeCreateModule");
+    },
+    filterTT(val) {
+      this.$emit("sendFilterTT", val);
+    },
     getQrCode() {
       this.$router.push("/qr-code");
     },
@@ -169,6 +307,7 @@ export default {
       localStorage.removeItem("info");
       localStorage.removeItem("userId");
       localStorage.removeItem("phone-number");
+      localStorage.removeItem("token");
       window.close();
     },
     showSignOut() {
@@ -240,14 +379,14 @@ export default {
         const res = await customAxios.get(
           `subscription-list/filter_notification/?module_id=${
             JSON.parse(localStorage.getItem("info")).user.id
-          }&start_date=${start}&finish_date=${finish}`,
-          {
-            headers: {
-              Authorization: `token ${
-                JSON.parse(localStorage.getItem("info"))?.token
-              }`,
-            },
-          }
+          }&start_date=${start}&finish_date=${finish}`
+          // {
+          //   headers: {
+          //     Authorization: `token ${
+          //       JSON.parse(localStorage.getItem("info"))?.token
+          //     }`,
+          //   },
+          // }
         );
         this.$store.commit("getNotifications", res);
       } catch (e) {
@@ -261,14 +400,14 @@ export default {
             "operation/create_qr_image/",
             {
               module_id: JSON.parse(localStorage.getItem("info"))?.user.id,
-            },
-            {
-              headers: {
-                Authorization: `token ${
-                  JSON.parse(localStorage.getItem("info"))?.token
-                }`,
-              },
             }
+            // {
+            //   headers: {
+            //     Authorization: `token ${
+            //       JSON.parse(localStorage.getItem("info"))?.token
+            //     }`,
+            //   },
+            // }
           );
           this.$store.dispatch("getQR", res.data[0]);
         } catch (e) {
@@ -332,7 +471,7 @@ export default {
 <style scoped>
 .n-header {
   margin-top: 1rem;
-  max-height: 15vh;
+  max-height: 14vh;
   display: flex;
   justify-content: space-between;
 }
@@ -341,9 +480,10 @@ export default {
   align-items: center;
   gap: 8px;
   flex: 2;
-  padding: 8px;
+  padding: 8px 8px 8px 4px;
   border-radius: 15px;
   background: #fff;
+  overflow: hidden;
 }
 .right {
   display: flex;
@@ -354,28 +494,28 @@ export default {
   position: relative;
 }
 .img-left {
-  width: 20%;
-  height: 14vh;
+  /* width: 20%; */
+  height: 13vh;
 }
 .img-left img {
-  border-radius: 8px;
+  border-radius: 12px;
 }
 .content-left {
   width: 70%;
-  line-height: 16px;
+  line-height: 15px;
 }
 img {
   height: 100%;
   width: 100%;
 }
 h4 {
-  font-size: 22px;
+  font-size: 20px;
   margin-bottom: 4px;
   color: #1b1b1d;
   font-weight: bold;
 }
 .content-left span {
-  font-size: 14px;
+  font-size: 13px;
   margin-bottom: 0;
   color: #aeaeae;
 }
@@ -403,6 +543,39 @@ h4 {
 }
 .base:active {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+}
+.circle-user {
+  background: #fff url("../../assets/user.svg") no-repeat center;
+  background-size: 48%;
+}
+.circle-user.active-bg {
+  background: #016bd4 url("../../assets/user-white.svg") no-repeat center;
+  background-size: 48%;
+}
+.circle-students {
+  background: #fff url("../../assets/users.svg") no-repeat center;
+  background-size: 48%;
+}
+.circle-students.active-bg {
+  background: #016bd4 url("../../assets/users-white.svg") no-repeat center;
+  background-size: 48%;
+}
+.circle-book {
+  background: #fff url("../../assets/book-attendance.svg") no-repeat center;
+  background-size: 55%;
+}
+.circle-book.active-bg {
+  background: #016bd4 url("../../assets/book-attendance-white.svg") no-repeat
+    center;
+  background-size: 55%;
+}
+.circle0 {
+  background: #fff url("../../assets/calendar.svg") no-repeat center;
+  background-size: 50%;
+}
+.circle0.active-bg {
+  background: #016bd4 url("../../assets/white-calendar.svg") no-repeat center;
+  background-size: 50%;
 }
 .circle1 {
   background: #fff url("../../assets/qr.svg") no-repeat center;
@@ -455,19 +628,30 @@ h4 {
 }
 .sign-out {
   position: absolute;
-  top: 45%;
-  right: 55px;
-  z-index: 10;
+  top: 52%;
+  right: 0px;
+  z-index: 100;
+  border-radius: 12px;
   background: #fff;
   padding: 8px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 4px;
 }
 .sign-out .dd p {
-  font-size: 14px;
+  font-size: 13px;
   padding: 8px;
+  color: #b6bccb;
 }
-.sign-out .dd:hover {
+.dd img {
+  width: 24px;
+  padding-left: 4px;
+}
+.sign-out .dd:hover,
+.active-dd {
   background: #eeeeee;
+  border-radius: 8px;
+}
+.dd.active-dd p {
+  color: #000;
 }
 .dd-enter-from,
 .dd-leave-to {
@@ -506,6 +690,9 @@ button.active-tab {
   background: #016bd4;
   color: #fff;
 }
+button.active-tab svg path {
+  fill: #fff;
+}
 .cal {
   width: 40px;
   height: 40px;
@@ -517,7 +704,7 @@ button.active-tab {
   right: -1.5rem;
   background: #fff;
   padding: 1rem;
-  z-index: 1;
+  z-index: 100;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 4px;
   border-radius: 6px;
 }
@@ -530,5 +717,9 @@ button.active-tab {
 input[type="date"] {
   font-size: 14px;
   color: #1b1b1d;
+}
+.module-btn {
+  font-size: 14px;
+  border-radius: 5px;
 }
 </style>

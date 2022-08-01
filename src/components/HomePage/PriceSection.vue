@@ -287,7 +287,7 @@ export default {};
 }
 .price {
   border-radius: 20px;
-  box-shadow: 0px 0px 2px 0px #00000033;
+  box-shadow: 0px 0px 10px 0px #00000009;
   overflow: hidden;
 }
 .price-header {
