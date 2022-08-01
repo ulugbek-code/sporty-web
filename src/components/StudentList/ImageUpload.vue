@@ -1,7 +1,7 @@
 <template>
   <div
     class="dropbox"
-    :class="imageData ? 'border-0' : ''"
+    :class="[imageData ? 'border-0' : '', isEmpty ? 'error' : '']"
     :style="{ 'background-image': `url(${imageData})` }"
   >
     <span
@@ -20,7 +20,12 @@
     />
     <div v-if="!imageData" class="icon text-center">
       <h1 class="mb-0">+</h1>
-      <p v-if="!moduleCreate">Выберите изображение</p>
+      <p
+        v-if="!moduleCreate"
+        :class="isEmpty && !imageData ? 'text-danger' : ''"
+      >
+        Выберите изображение
+      </p>
     </div>
   </div>
 </template>
@@ -28,7 +33,7 @@
 <script>
 // import axios from "axios";
 export default {
-  props: ["img", "baseUrl", "qty", "moduleCreate", "editModule"],
+  props: ["img", "baseUrl", "qty", "moduleCreate", "editModule", "isEmpty"],
   data() {
     return {
       isLoading: false,
@@ -128,6 +133,15 @@ span.float-end {
 }
 .dropbox:hover {
   background-blend-mode: luminosity;
+}
+.error {
+  border: 2px dashed rgb(243, 66, 66);
+}
+.error h1 {
+  color: rgb(243, 66, 66);
+}
+span.float-end {
+  color: #fff;
 }
 @media screen and (max-width: 768px) {
   .dropbox {

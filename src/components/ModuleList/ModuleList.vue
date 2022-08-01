@@ -48,7 +48,11 @@ export default {
     },
   },
   async created() {
+    this.$Progress.start();
     await this.$store.dispatch("getModuleLists");
+  },
+  mounted() {
+    this.$Progress.finish();
   },
 };
 </script>

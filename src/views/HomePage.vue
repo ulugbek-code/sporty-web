@@ -271,9 +271,13 @@ export default {
     },
   },
   async created() {
+    this.$Progress.start();
     this.getYear();
     await this.$store.dispatch("getModuleShort");
     await this.$store.dispatch("getQuestions");
+  },
+  mounted() {
+    this.$Progress.finish();
   },
 };
 </script>

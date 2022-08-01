@@ -36,6 +36,12 @@ export default {
     //   link.click();
     // },
   },
+  created() {
+    this.$Progress.start();
+  },
+  mounted() {
+    this.$Progress.finish();
+  },
 };
 </script>
 

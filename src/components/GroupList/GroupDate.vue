@@ -1,7 +1,10 @@
 <template>
   <div @click.stop="" class="position-relative">
     <div class="hours-dd">
-      <p>Выберите дни недели</p>
+      <p v-if="isEmpty && !all.length" class="text-danger">
+        Пожалуйста, выберите дни недели!
+      </p>
+      <p v-else>Выберите дни недели</p>
       <div class="weekDays-selector">
         <div
           @click="setTab(week)"
@@ -68,7 +71,7 @@
 <script>
 import GroupDateTab from "./GroupDateTab.vue";
 export default {
-  props: ["all"],
+  props: ["all", "isEmpty"],
   emits: ["updateD", "delDate"],
   components: {
     GroupDateTab,

@@ -2,8 +2,8 @@ import axios from "axios";
 import router from "./router";
 
 const customAxios = axios.create({
-  // baseURL: process.env.VUE_APP_BASE_URL,
-  baseURL: process.env.VUE_APP_LOCAL_URL,
+  baseURL: process.env.VUE_APP_BASE_URL,
+  // baseURL: process.env.VUE_APP_LOCAL_URL,
   // timeout: 15000,
   // headers: {
   //   // Authorization: "token ee0383cd78080ce5f5a2ad341c11a1fb5af239a9",
@@ -27,7 +27,7 @@ customAxios.interceptors.response.use(
     // Do something with response error
     if (error.response.status === 401) {
       localStorage.clear();
-      router.push("/sign-in");
+      router.replace("/sign-in");
     }
     return Promise.reject(error);
   }

@@ -85,6 +85,12 @@ export default {
       }
     },
   },
+  created() {
+    this.$Progress.start();
+  },
+  mounted() {
+    this.$Progress.finish();
+  },
 };
 </script>
 

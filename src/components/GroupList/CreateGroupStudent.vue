@@ -1,7 +1,10 @@
 <template>
   <div class="create-wrap">
     <div>
-      <h1 class="mb-3">Добавить студентов</h1>
+      <h3 v-if="isEmpty && !value.length" class="mb-3 text-danger">
+        Пожалуйста, добавьте студентов!
+      </h3>
+      <h1 v-else class="mb-3">Добавить студентов</h1>
       <form @submit.prevent="" @keydown.enter="saveModule">
         <div class="mb-3 int-wrap">
           <Multiselect
@@ -14,7 +17,11 @@
           />
         </div>
         <div class="d-flex gap-3">
-          <button @click="closeCreateGroup" class="btn btn-secondary w-50">
+          <button
+            @click="closeCreateGroup"
+            class="btn btn-secondary w-50"
+            type="button"
+          >
             Отмена
           </button>
           <button @click="addStudents" class="btn btn-primary w-50">
@@ -36,6 +43,8 @@ export default {
   },
   data() {
     return {
+      isEmpty: false,
+      grId: this.currentGr.id,
       value: [],
       allStudents: [],
     };
@@ -57,7 +66,9 @@ export default {
     async getStudents() {
       try {
         const res = await customAxios.get(
-          `group-erp/get_students_all/?group_id=${this.currentGr.id}`
+          `group-erp/get_students_all/?group_id=${this.grId}&module_id=${
+            JSON.parse(localStorage.getItem("info")).user.id
+          }`
         );
         this.allStudents = res.data;
       } catch (e) {
@@ -65,13 +76,17 @@ export default {
       }
     },
     async addStudents() {
+      if (!this.value.length) {
+        this.isEmpty = true;
+        return;
+      }
       try {
         await customAxios.post("group-erp/add_student/", {
-          group_id: this.currentGr.id,
+          group_id: this.grId,
           user_id: this.value,
         });
 
-        await this.$store.dispatch("getCurrentGroup", this.currentGr.id);
+        await this.$store.dispatch("getCurrentGroup", this.grId);
         await this.$store.dispatch("getGroupList");
         this.closeCreateGroup();
       } catch (e) {
@@ -81,6 +96,9 @@ export default {
   },
   async created() {
     await this.getStudents();
+  },
+  unmounted() {
+    this.$store.dispatch("getIsGroup", "details");
   },
 };
 </script>
@@ -96,14 +114,14 @@ export default {
   background: #fff;
   padding-left: 1rem;
 }
-h1 {
+h1,
+h3 {
   font-weight: 700;
   text-align: center;
 }
 .int-wrap {
   max-width: 500px;
 }
-
 .btn-secondary {
   background: #b6bccb;
   border: 1px solid #b6bccb;

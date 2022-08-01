@@ -3,19 +3,48 @@
     <div>
       <h1 class="mb-3">Добавить новый модуль</h1>
       <form @submit.prevent="" @keydown.enter="saveModule">
-        <div class="inp-wrap">
+        <div class="inp-wrap" :class="!className && isEmpty ? 'error' : ''">
           <span>Имя</span>
           <input v-model="className" type="text" placeholder="Имя модуля..." />
           <div class="icon">
-            <img src="../../assets/book-attendance.svg" alt="" />
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 30 30"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.25 5V27.5M7.5 5H21.25C21.913 5 22.5489 5.26339 23.0178 5.73223C23.4866 6.20107 23.75 6.83696 23.75 7.5V22.5C23.75 23.163 23.4866 23.7989 23.0178 24.2678C22.5489 24.7366 21.913 25 21.25 25H7.5C7.16848 25 6.85054 24.8683 6.61612 24.6339C6.3817 24.3995 6.25 24.0815 6.25 23.75V6.25C6.25 5.91848 6.3817 5.60054 6.61612 5.36612C6.85054 5.1317 7.16848 5 7.5 5V5Z"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M16.25 10H18.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M16.25 15H18.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </div>
         </div>
         <module-drop-down
           :options="categories"
+          :isEmpty="isEmpty"
           defaultVal="Не Выбрано"
           @input="getCategory"
         ></module-drop-down>
-        <div class="inp-wrap">
+        <div class="inp-wrap" :class="!description && isEmpty ? 'error' : ''">
           <span>Описание</span>
           <textarea
             v-model="description"
@@ -24,7 +53,35 @@
             maxlength="1024"
           ></textarea>
           <div class="icon">
-            <img src="../../assets/lines.svg" alt="" />
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 26 26"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4.33301 6.5H21.6663"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4.33301 13H15.1663"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4.33301 19.5H19.4997"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </div>
           <div class="length">
             <p>{{ description.length }} / 1024</p>
@@ -34,6 +91,7 @@
           <image-upload
             :moduleCreate="true"
             :qty="0"
+            :isEmpty="isEmpty"
             @input="addImage"
             @r-input="removeImg"
           ></image-upload>
@@ -75,6 +133,7 @@ export default {
   },
   data() {
     return {
+      isEmpty: false,
       className: "",
       description: "",
       categories: [],
@@ -82,11 +141,6 @@ export default {
       moduleId: "",
       images: [],
     };
-  },
-  computed: {
-    isFull() {
-      return !this.className || !this.description || !this.category;
-    },
   },
   methods: {
     addImage(val) {
@@ -104,6 +158,15 @@ export default {
       this.$store.dispatch("changeCreateModule", true);
     },
     async saveModule() {
+      if (
+        !this.className ||
+        !this.description ||
+        this.images.length === 0 ||
+        this.category === ""
+      ) {
+        this.isEmpty = true;
+        return;
+      }
       try {
         let fileData = new FormData();
         fileData.append(
@@ -227,7 +290,7 @@ button {
   right: 8px;
   top: 12px;
 }
-.icon img {
+.icon svg {
   width: 90%;
 }
 .length {
@@ -236,5 +299,8 @@ button {
   position: absolute;
   right: 8px;
   bottom: -10px;
+}
+.error span {
+  color: #ea4335;
 }
 </style>

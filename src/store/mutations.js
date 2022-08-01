@@ -5,7 +5,10 @@ export default {
   },
   errorHandle(state, payload) {
     if (payload.request?.status === 400) {
-      if (payload.response.data.username) {
+      if (
+        payload.response.data.username ||
+        payload.response.data.phone_number
+      ) {
         state.error = "Номер телефона уже занят";
       } else {
         state.error = payload.response.data; //"Логин или пароль неверный!";

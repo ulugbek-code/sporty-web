@@ -4,7 +4,7 @@
       class="selected"
       :class="{
         open: open,
-        isempty: isEmpty && !selected,
+        isEmpty: isEmpty && !selected,
         defaultColor: selected == 'Не Выбрано',
       }"
       @click="toggle"
@@ -14,10 +14,40 @@
         v-model="selected"
         class="search-input"
         type="text"
-        :placeholder="defaultVal"
+        placeholder="Не Выбрано"
       />
-      <div class="icon">
-        <img src="../../assets/drop-down.svg" alt="" />
+      <div v-if="!selected" class="icon">
+        <svg
+          id="dd"
+          width="14"
+          height="10"
+          viewBox="0 0 14 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M1 1L7 8L13 1"
+            stroke="#B6BCCB"
+            stroke-width="2"
+            stroke-linecap="round"
+          />
+        </svg>
+      </div>
+      <div v-else @click.stop="resetSelected" class="icon">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 10 10"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M9.5 0.5L0.5 9.5M0.5 0.5L9.5 9.5"
+            stroke="#B6BCCB"
+            stroke-linecap="round"
+            stroke-width="1.5px"
+          />
+        </svg>
       </div>
       <!-- {{ selected }} -->
     </div>
@@ -88,6 +118,9 @@ export default {
     },
   },
   methods: {
+    resetSelected() {
+      this.selected = "";
+    },
     closeDD() {
       this.open = false;
     },
@@ -107,12 +140,12 @@ export default {
     },
   },
   watch: {
-    submitted() {
-      if (this.submitted === true) {
-        this.selected = this.default;
-        this.$emit("changee");
-      }
-    },
+    // submitted() {
+    //   if (this.submitted === true) {
+    //     this.selected = this.default;
+    //     this.$emit("changee");
+    //   }
+    // },
   },
 };
 </script>
@@ -195,14 +228,23 @@ span {
   right: 14px;
   top: 14px;
 }
-.icon img {
+.icon svg {
   width: 90%;
   transition: all 0.2s ease;
 }
-.selected.open .icon img {
+.selected.open .icon svg {
   transform: rotateZ(180deg);
 }
 input {
   width: 95%;
+}
+.isEmpty {
+  border: 1px solid #ea4335;
+}
+.isEmpty span {
+  color: #ea4335;
+}
+.isEmpty svg path {
+  stroke: #ea4335;
 }
 </style>

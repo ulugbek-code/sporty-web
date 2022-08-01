@@ -203,11 +203,7 @@
                     ><img src="../../assets/multiply.svg" alt=""
                   /></span>
                   <p class="mx-1"><span>Гр:</span> {{ date?.group_name }}</p>
-                  <p class="mx-1">
-                    {{
-                      date?.teacher_name ? date?.teacher_name : "Alisher Navoiy"
-                    }}
-                  </p>
+                  <p class="mx-1"><span>Лвл:</span> {{ date.level_name }}</p>
                   <p id="week" class="mx-1">
                     <span v-for="(week, i) in weekArr(date.week)" :key="week"
                       >{{ getWeek(week)
@@ -440,8 +436,12 @@ export default {
     },
   },
   async created() {
+    this.$Progress.start();
     await this.$store.dispatch("getFilteredTimeTable", this.filteredTT);
     await this.getGroups();
+  },
+  mounted() {
+    this.$Progress.finish();
   },
 };
 </script>
@@ -452,7 +452,7 @@ export default {
   padding: 1rem 1rem 0 1rem;
 }
 .t-container {
-  padding-bottom: 1.5rem;
+  padding-bottom: 2.7rem;
   overflow: hidden;
 }
 .box-header {

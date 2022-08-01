@@ -218,8 +218,12 @@ export default {
     },
   },
   async created() {
+    this.$Progress.start();
     await this.$store.dispatch("getNotifications");
     this.startFetching();
+  },
+  mounted() {
+    this.$Progress.finish();
   },
   watch: {
     async filteredTT(val) {
@@ -262,7 +266,7 @@ export default {
   background: #eeeeee;
 }
 .parent {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-template-rows: repeat(2, 1fr);
@@ -272,12 +276,12 @@ export default {
 .parent-tt {
   margin-top: 1rem;
   background: #fff;
-  height: 75vh;
+  height: 74vh;
   border-radius: 15px;
   overflow: auto;
 }
 .child {
-  height: 36vh;
+  height: 38vh;
   background: #fff;
   border-radius: 15px;
   overflow-y: auto;

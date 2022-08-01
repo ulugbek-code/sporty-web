@@ -34,14 +34,12 @@ const router = createRouter({
   ],
 });
 
-// router.beforeEach(function (to, _, next) {
-//   if (to.meta.requiresAuth && !localStorage.getItem("info").token) {
-//     next("/sign-in");
-//   } else if (to.meta.requiresUnauth && localStorage.getItem("info").token) {
-//     next("/");
-//   } else {
-//     next();
-//   }
-// });
+router.beforeEach(function (to, _, next) {
+  if (to.meta.requiresAuth && !localStorage.getItem("token")) {
+    next("/sign-in");
+  } else {
+    next();
+  }
+});
 
 export default router;

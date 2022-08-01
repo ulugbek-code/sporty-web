@@ -1,5 +1,5 @@
 <template>
-  <!-- <nav-bar></nav-bar> -->
+  <vue-progress-bar></vue-progress-bar>
   <base-dialog :show="isError" @close="cancelErr">
     <template #default>
       <div class="form-task text-center">
@@ -99,5 +99,14 @@ td {
 .nav-leave-from {
   opacity: 1;
   transform: translateY(0);
+}
+.error span {
+  color: #ea4335;
+}
+.error {
+  border: 1px solid #ea4335;
+}
+.error svg path {
+  stroke: #ea4335;
 }
 </style>

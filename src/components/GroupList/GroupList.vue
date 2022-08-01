@@ -30,7 +30,11 @@ export default {
     },
   },
   async created() {
+    this.$Progress.start();
     await this.$store.dispatch("getGroupList");
+  },
+  mounted() {
+    this.$Progress.finish();
   },
 };
 </script>

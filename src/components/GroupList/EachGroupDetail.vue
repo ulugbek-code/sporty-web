@@ -92,7 +92,6 @@
         </p>
       </div>
     </div>
-
     <div class="lvl-btn d-flex justify-content-between mb-4">
       <button @click="showGroups = !showGroups" class="btn">
         Студенты

@@ -20,7 +20,10 @@
   <base-dialog :show="isRotate" @close="closeRotate" :zIndex="true">
     <template #default>
       <form class="form-task">
-        <div class="inp-wrap date-wrap">
+        <div
+          class="inp-wrap date-wrap"
+          :class="!startDate && isEmpty ? 'error' : ''"
+        >
           <span>Дата начала</span>
           <input
             v-model="startDate"
@@ -28,10 +31,62 @@
             :class="!startDate ? 'default-color' : ''"
           />
           <div class="icon">
-            <img src="../../assets/calendar.svg" alt="" />
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 30 30"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.7438 26.25H6.25C5.58696 26.25 4.95107 25.9866 4.48223 25.5178C4.01339 25.0489 3.75 24.413 3.75 23.75V8.75C3.75 8.08696 4.01339 7.45107 4.48223 6.98223C4.95107 6.51339 5.58696 6.25 6.25 6.25H21.25C21.913 6.25 22.5489 6.51339 23.0178 6.98223C23.4866 7.45107 23.75 8.08696 23.75 8.75V13.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M22.5 27.5C25.2614 27.5 27.5 25.2614 27.5 22.5C27.5 19.7386 25.2614 17.5 22.5 17.5C19.7386 17.5 17.5 19.7386 17.5 22.5C17.5 25.2614 19.7386 27.5 22.5 27.5Z"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M18.75 3.75V8.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M8.75 3.75V8.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M3.75 13.75H23.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M22.5 20.62V22.5L23.75 23.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </div>
         </div>
-        <div class="inp-wrap date-wrap">
+        <div
+          class="inp-wrap date-wrap"
+          :class="!finishDate && isEmpty ? 'error' : ''"
+        >
           <span>Дата окончания</span>
           <input
             v-model="finishDate"
@@ -39,10 +94,59 @@
             :class="!finishDate ? 'default-color' : ''"
           />
           <div class="icon">
-            <img src="../../assets/calendar.svg" alt="" />
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 30 30"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M14.7438 26.25H6.25C5.58696 26.25 4.95107 25.9866 4.48223 25.5178C4.01339 25.0489 3.75 24.413 3.75 23.75V8.75C3.75 8.08696 4.01339 7.45107 4.48223 6.98223C4.95107 6.51339 5.58696 6.25 6.25 6.25H21.25C21.913 6.25 22.5489 6.51339 23.0178 6.98223C23.4866 7.45107 23.75 8.08696 23.75 8.75V13.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M22.5 27.5C25.2614 27.5 27.5 25.2614 27.5 22.5C27.5 19.7386 25.2614 17.5 22.5 17.5C19.7386 17.5 17.5 19.7386 17.5 22.5C17.5 25.2614 19.7386 27.5 22.5 27.5Z"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M18.75 3.75V8.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M8.75 3.75V8.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M3.75 13.75H23.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M22.5 20.62V22.5L23.75 23.75"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </div>
         </div>
-        <div class="inp-wrap">
+        <div class="inp-wrap" :class="!attendance && isEmpty ? 'error' : ''">
           <span>Присутствие</span>
           <input
             v-model="attendance"
@@ -50,7 +154,49 @@
             placeholder="Присутствие..."
           />
           <div class="icon">
-            <img src="../../assets/one-two.svg" alt="" />
+            <svg
+              width="26"
+              height="26"
+              viewBox="0 0 26 26"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M11.917 6.5H21.667"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M11.917 13H21.667"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M13 19.5H21.6667"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M4.33301 17.3333C4.33301 16.7587 4.56128 16.2076 4.96761 15.8013C5.37394 15.3949 5.92504 15.1667 6.49967 15.1667C7.07431 15.1667 7.62541 15.3949 8.03174 15.8013C8.43807 16.2076 8.66634 16.7587 8.66634 17.3333C8.66634 17.9736 8.12467 18.4167 7.58301 18.9583L4.33301 21.6667H8.66634"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M6.49967 10.8333V4.33334L4.33301 6.5"
+                stroke="#B6BCCB"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
           </div>
         </div>
       </form>
@@ -70,23 +216,6 @@
           Сохранить
         </button>
       </div>
-      <!--  -->
-      <!-- <div class="d-flex gap-3 mt-4">
-        <button
-          @click="closeRotate"
-          class="w-50 btn btn-danger py-2 px-5"
-          type="button"
-        >
-          Нет
-        </button>
-        <button
-          @click="postRotate"
-          class="w-50 btn btn-outline-primary py-2 px-5"
-          type="submit"
-        >
-          Да
-        </button>
-      </div> -->
     </template>
   </base-dialog>
   <div class="each-lvl">
@@ -119,8 +248,8 @@
         </h6>
       </div>
       <div>
-        <p>Посещаемость:</p>
-        <h6>{{ student.total_attendance }}</h6>
+        <p>Oставшаяся посещаемость:</p>
+        <h6>{{ student.remaining_attendance }}</h6>
       </div>
       <div>
         <p>Всего уроков:</p>
@@ -175,6 +304,7 @@ export default {
   },
   data() {
     return {
+      isEmpty: false,
       isDelete: false,
       deleteId: null,
       isRotate: false,
@@ -187,13 +317,21 @@ export default {
   methods: {
     closeRotate() {
       this.isRotate = false;
+      this.isEmpty = false;
       this.userId = null;
+      this.startDate = "";
+      this.finishDate = "";
+      this.attendance = "";
     },
     triggerRotate(id) {
       this.isRotate = true;
       this.userId = id;
     },
     async postRotate() {
+      if (!this.startDate || !this.finishDate || !this.attendance) {
+        this.isEmpty = true;
+        return;
+      }
       try {
         await customAxios.post("subscription/", {
           start_date: this.startDate,
@@ -286,7 +424,7 @@ input::placeholder,
   pointer-events: none;
   background: #f6f6f6;
 }
-.icon img {
+.icon svg {
   width: 90%;
 }
 /*  */
@@ -358,6 +496,9 @@ button {
 }
 .btn-secondary:hover {
   background: #8f929a;
+}
+.error span {
+  color: #ea4335;
 }
 /*  */
 </style>

@@ -11,11 +11,11 @@
         <span class="mx-1 text-success">{{ list.level_name }}</span>
       </p>
     </div>
-    <div>
+    <!-- <div>
       <button @click.stop="checkAttendance" class="btn btn-primary">
         посещение
       </button>
-    </div>
+    </div> -->
   </div>
 </template>
 
